@@ -11,7 +11,11 @@ list_of_greeting = ['привет', 'здравствуйте', 'добрый у
                     'привет.', 'здравствуйте.', 'добрый утро.', 'добрый день.', 'добрый вечер.',
                     'привет!', 'здравствуйте!', 'добрый утро!', 'добрый день!', 'добрый вечер!']
 
-hello_message = 'Привет! Я официальный бот-помощник билиотеки имени К.А.Тимирязева. И вот что я умею:'
+hello_message = ', привет! Я официальный бот-помощник библиотеки им. К.А.Тимирязева. \n' \
+                'И вот что я умею: \n' \
+                '1. Могу помочь Вам продлить книгу \n'
+
+missunderstanding_message = 'Я из другой эпохи, эти вопросы не ко мне!'
 
 
 def message(message):
@@ -22,7 +26,11 @@ while True:
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             user_message = event.text
-            if user_message.lower() in list_of_greeting:
-                message(hello_message)
+            user_message = user_message.lower()
+            user_info = session_api.users.get(user_ids=event.user_id)
+            if user_message in list_of_greeting:
+                message(user_info[0]['first_name'] + hello_message)
+            elif user_message == '1':
+                message('вот ссылочка: \n https://vk.com/app6013442_-43349586#form_id=1')
             else:
-                message('Я из другой эпохи, эти вопросы не ко мне!')
+                pass
