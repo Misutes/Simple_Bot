@@ -23,14 +23,12 @@ def recognition():
     with sr.AudioFile(file) as source:
         audio = r.record(source)
     try:
-        print('I try recognition')
-        text = r.recognize_google(audio)
-        print('I do it')
-        print(text)
+        print('Пробую распознать')
+        text = r.recognize_google(audio, language='ru_RU')
+        print('Google думает, что в записи сказано:' + text)
         return text
     except:
-        text = 'Я Вас, к сожалению не понял'
-        return text
+        print('Распознавание не удалось')
     finally:
         os.remove('audio_msg.wav')
 
@@ -38,5 +36,4 @@ def recognition():
 def audio_answer(link):
     download(link)
     audio_convert()
-    message = recognition()
-    return message
+    return recognition()

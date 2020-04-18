@@ -16,7 +16,7 @@ longpoll = VkLongPoll(vk_session)
 user_list = []
 
 
-def message(message, keyboard):
+def send_message(message, keyboard):
     vk_session.method('messages.send', {
         'user_id': event.user_id,
         'message': message,
@@ -25,25 +25,36 @@ def message(message, keyboard):
     })
 
 
+def message_transform(element):
+    return list((element.lower()).split(' '))
+
+
 while True:
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            user_message = list((event.text.lower()).split(' '))
+            user_message = message_transform(event.text)
             user_info = session_api.users.get(user_ids=event.user_id)
             user_info = user_info[0]
             if event.attachments:
-                link = (json.loads(event.attachments['attachments']))[0]['audio_message']['link_mp3']
-                message(Speech.audio_answer(link), None)
+                try:
+                    send_message('Дайте-ка, подумать', None)
+                    link = (json.loads(event.attachments['attachments']))[0]['audio_message']['link_mp3']
+                    audio_message = Speech.audio_answer(link)
+                    user_message = message_transform(audio_message)
+                except KeyError:
+                    pass
             if set(user_message) & set(Text.list_of_greeting):
                 if user_info['id'] not in user_list:
                     user_list.append(user_info['id'])
-                    message(user_info['first_name'] + Text.hello_message, new_keyboard(keyboard.function_keyboard))
+                    send_message(user_info['first_name'] + Text.hello_message, new_keyboard(keyboard.function_keyboard))
                 else:
-                    message(user_info['first_name'] + str(', категорически приветствую! Напомниаю, что я могу: '),
-                            new_keyboard(keyboard.function_keyboard))
+                    send_message(user_info['first_name'] + str(', категорически приветствую! Напомниаю, что я могу: '),
+                                 new_keyboard(keyboard.function_keyboard))
             elif 'продление' in user_message:
-                message(user_info['first_name'] + str(' , Вы можете сделать это здесь'),
-                        new_keyboard(keyboard.link_keyboard))
-            elif 'написать' and 'кое-что' in user_message:
-                message(user_info['first_name'] + str(', я же умненький?'),
-                        None)
+                send_message(user_info['first_name'] + str(', Вы можете сделать это здесь'),
+                             new_keyboard(keyboard.link_keyboard))
+            elif ('написать' and 'кое-что') in user_message:
+                send_message(user_info['first_name'] + str(', я же умненький?'),
+                             None)
+            else:
+                send_message(user_info['first_name'] + ', Климент Аркадьевич не умеет с этим работать.', None)
