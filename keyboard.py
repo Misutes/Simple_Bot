@@ -44,3 +44,12 @@ link_keyboard = {
             ]
         ]
     }
+
+call_staff = {
+    "inline": True,
+    "buttons": [
+        [
+            get_text_buttons(label='Связаться с сотрудником', color='positive')
+        ]
+    ]
+}

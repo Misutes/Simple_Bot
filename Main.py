@@ -14,7 +14,7 @@ session_api = vk_session.get_api()
 longpoll = VkLongPoll(vk_session)
 
 user_list = []
-
+bot_answer = True
 
 def send_message(message, keyboard):
     vk_session.method('messages.send', {
@@ -26,12 +26,28 @@ def send_message(message, keyboard):
 
 
 def message_transform(element):
-    return list((element.lower()).split(' '))
+    return (element.lower()).split(' ')
+
+
+def bot_pause():
+    global bot_answer, event
+    while not bot_answer:
+        for event in longpoll.listen():
+            if event.type == VkEventType.MESSAGE_NEW and event.from_me:
+                if 'бот' == event.text.lower():
+                    bot_answer = True
+                    vk_session.method('messages.edit', {'peer_id': event.user_id, 'message_id': event.message_id, 'message':'Спасибо за обращение!'})
+                    break
 
 
 while True:
     for event in longpoll.listen():
+        if event.type == VkEventType.MESSAGE_NEW and event.from_me:
+            if len([key for key in event.message_flags]) == 3:
+                bot_answer = False
+                bot_pause()
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+            miss = 0
             user_message = message_transform(event.text)
             user_info = session_api.users.get(user_ids=event.user_id)
             user_info = user_info[0]
@@ -43,18 +59,28 @@ while True:
                     user_message = message_transform(audio_message)
                 except KeyError:
                     pass
-            if set(user_message) & set(Text.list_of_greeting):
-                if user_info['id'] not in user_list:
-                    user_list.append(user_info['id'])
-                    send_message(user_info['first_name'] + Text.hello_message, new_keyboard(keyboard.function_keyboard))
+            for word in user_message:
+                if word in Text.list_of_greeting:
+                    if user_info['id'] not in user_list:
+                        user_list.append(user_info['id'])
+                        send_message(user_info['first_name'] + Text.hello_message, new_keyboard(keyboard.function_keyboard))
+                        send_message('А еще я умею понимать голосовые сообщения!', None)
+                    else:
+                        send_message(user_info['first_name'] + str(', категорически приветствую! Напомниаю, что я могу: '),
+                                     new_keyboard(keyboard.function_keyboard))
+                elif word in Text.renewal_list:
+                    send_message(user_info['first_name'] + str(', Вы можете продлить книги здесь'),
+                                 new_keyboard(keyboard.link_keyboard))
+                elif word == ('написать' and 'кое-что'):
+                    send_message(user_info['first_name'] + str(', тут будут какие-то функции бота'),
+                                 None)
                 else:
-                    send_message(user_info['first_name'] + str(', категорически приветствую! Напомниаю, что я могу: '),
-                                 new_keyboard(keyboard.function_keyboard))
-            elif 'продление' in user_message:
-                send_message(user_info['first_name'] + str(', Вы можете сделать это здесь'),
-                             new_keyboard(keyboard.link_keyboard))
-            elif ('написать' and 'кое-что') in user_message:
-                send_message(user_info['first_name'] + str(', я же умненький?'),
-                             None)
-            else:
-                send_message(user_info['first_name'] + ', Климент Аркадьевич не умеет с этим работать.', None)
+                    miss += 1
+            if ('сотрудником' in user_message) and ('связаться' in user_message):
+                bot_answer = False
+                bot_pause()
+            elif miss == len(user_message):
+                send_message(user_info['first_name'] + ', Климент Аркадьевич не умеет с этим работать. Пока могу только:',
+                             new_keyboard(keyboard.function_keyboard))
+                send_message('Или Вы можете связаться с сотрудником билиотеки', new_keyboard(keyboard.call_staff))
+
