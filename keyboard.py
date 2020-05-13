@@ -94,3 +94,12 @@ unknown_link_keyboard = {
 
     ]
 }
+
+litres_link_keyboard = {
+    "inline": True,
+    "buttons": [
+        [get_link_buttons('10 правил Бигуна',
+                          'https://www.litres.ru/patrik-dzh-holl/minet-10-pravil-kotorye-ty-dolzhna-znat/')],
+
+    ]
+}

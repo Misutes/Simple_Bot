@@ -40,9 +40,10 @@ def bot_return():
         if event.type == VkEventType.MESSAGE_NEW and event.from_me:
             if 'бот' == event.text.lower():
                 vk_session.method('messages.edit', {'peer_id': event.user_id, 'message_id': event.message_id,
-                                                         'message': 'Спасибо за обращение!'})
+                                                    'message': 'Спасибо за обращение!'})
 
                 break
+
 
 def main():
     global event
@@ -70,7 +71,7 @@ def main():
                 if bot_pause_dict[user_info['id']] == 1:
                     break
                 if challenge_dict[user_info['id']] == 1:
-                    book_challenge(event, send_message, empty, message_transform, user_info, challenge_dict)
+                    book_challenge(user_message, send_message, empty, message_transform, user_info, challenge_dict)
                     break
                 for word in user_message:
                     if word in Text.list_of_greeting:
@@ -96,7 +97,7 @@ def main():
                         send_message(empty, new_keyboard(keyboard.recommend_link_keyboard))
                     elif word == ('книжный' or 'вызов'):
                         challenge_dict[user_info['id']] = 1
-                        start_challenge(send_message, empty, user_info)
+                        start_challenge(vk_session, event, send_message, empty, user_info)
                     else:
                         miss += 1
                 if ('сотрудником' in user_message) or ('связаться' in user_message):
