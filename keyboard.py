@@ -1,6 +1,7 @@
 import json
 
 
+# создает обычную кнопку
 def get_text_buttons(label, color, payload=""):
     return {
         "action": {
@@ -12,6 +13,7 @@ def get_text_buttons(label, color, payload=""):
     }
 
 
+# создает ссылку
 def get_link_buttons(label, link):
     return {
         "action": {
@@ -22,43 +24,47 @@ def get_link_buttons(label, link):
     }
 
 
+# создает json клавиатуру
 def new_keyboard(keyboard):
     keyboard = str(json.dumps(keyboard, ensure_ascii=False))
     return keyboard
 
 
+# основное меню
 function_keyboard = {
     "inline": True,
     "buttons": [
-            [get_text_buttons(label='Продление книги', color='positive')],
-            [get_text_buttons(label='Режим работы/Адрес', color='positive')],
-            [get_text_buttons(label='ЛитРес', color='positive')],
-            [get_text_buttons(label='Видео-лекции', color='positive')],
-            [get_text_buttons(label='Рекомендация', color='positive')],
-            [get_text_buttons(label='Книжный вызов', color='primary')]
+        [get_text_buttons(label='Продление книги', color='positive')],
+        [get_text_buttons(label='Режим работы/Адрес', color='positive')],
+        [get_text_buttons(label='ЛитРес', color='positive')],
+        [get_text_buttons(label='Видео-лекции', color='positive')],
+        [get_text_buttons(label='Рекомендация', color='positive')],
+        [get_text_buttons(label='Книжный вызов', color='primary')]
     ]
 }
 
-book_chal_keyboard = {
+# меню "Книжного вызова"
+book_challenge_keyboard = {
     "inline": True,
     "buttons": [
         [get_text_buttons(label='Принять вызов!', color='positive')],
         [get_text_buttons(label='Книга прочитана!', color='primary')],
-        [get_text_buttons(label='Посмотреть список участников', color='primary')],
         [get_text_buttons(label='Уйти', color='primary')],
     ]
 }
 
+# ссылка для пробления книги
 link_keyboard = {
-        "inline": True,
-        "buttons": [
-            [
-                get_link_buttons('Продление книги',
-                                 'https://vk.com/app6013442_-43349586?form_id=1#form_id=1')
-            ]
+    "inline": True,
+    "buttons": [
+        [
+            get_link_buttons('Продление книги',
+                             'https://vk.com/app6013442_-43349586?form_id=1#form_id=1')
         ]
-    }
+    ]
+}
 
+# связь с сотрудником
 call_staff = {
     "inline": True,
     "buttons": [
@@ -68,18 +74,19 @@ call_staff = {
     ]
 }
 
-
+# первый лектор
 olga_link_keyboard = {
     "inline": True,
     "buttons": [
         [get_link_buttons('Культура Ленинграда 45-65 гг',
-                             'https://vk.com/timiriazevka?z=video-43349586_456239075%2F23db0421e4fd2913ef%2Fpl_wall_-43349586')],
+                          'https://vk.com/timiriazevka?z=video-43349586_456239075%2F23db0421e4fd2913ef%2Fpl_wall_-43349586')],
         [get_link_buttons('Поэма «Бахчисарайский фонтан»',
                           'https://vk.com/timiriazevka?z=video-43349586_456239080%2F4aa3766124e103fb87%2Fpl_wall_-43349586')]
 
     ]
 }
 
+# второй лектор
 unknown_link_keyboard = {
     "inline": True,
     "buttons": [
@@ -89,6 +96,7 @@ unknown_link_keyboard = {
     ]
 }
 
+# книга для "Книжного вызова"
 challenge_book_link_keyboard = {
     "inline": True,
     "buttons": [
@@ -98,6 +106,7 @@ challenge_book_link_keyboard = {
     ]
 }
 
+# меню "ЛитРес"
 litres_keyboard = {
     "inline": True,
     "buttons": [
@@ -110,6 +119,7 @@ litres_keyboard = {
     ]
 }
 
+# получения доступа к "ЛитРес"
 access_link = {
     "inline": True,
     "buttons": [
