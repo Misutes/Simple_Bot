@@ -3,8 +3,11 @@ import keyboard
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 
+import random
 import Speech
-import Text
+import Text as t
+import admin_command as ac
+import litres as lr
 from keyboard import new_keyboard
 from challenge import start_challenge, book_challenge
 
@@ -17,6 +20,7 @@ longpoll = VkLongPoll(vk_session)
 user_list = []
 bot_pause_dict = {}
 challenge_dict = {}
+litres_dict = {}
 
 empty = '&#4448;'
 
@@ -30,19 +34,16 @@ def send_message(message, keyboard):
     })
 
 
+def special_send_message(type, owner_id, media_id):
+    owner_id = str(owner_id)
+    media_id = str(media_id)
+    media = f'{type}{owner_id}_{media_id}'
+    vk_session.method('messages.send',
+                      {'user_id': event.user_id, 'attachment': media, 'random_id': random.randint(0, 10 ** 10)})
+
+
 def message_transform(element):
     return (element.lower()).split(' ')
-
-
-def bot_return():
-    global event
-    for event in longpoll.listen():
-        if event.type == VkEventType.MESSAGE_NEW and event.from_me:
-            if 'бот' == event.text.lower():
-                vk_session.method('messages.edit', {'peer_id': event.user_id, 'message_id': event.message_id,
-                                                    'message': 'Спасибо за обращение!'})
-
-                break
 
 
 def main():
@@ -51,8 +52,7 @@ def main():
         for event in longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.from_me:
                 if len([key for key in event.message_flags]) == 3:
-                    bot_return()
-                    bot_pause_dict[event.user_id] = 0
+                    ac.bot_return(vk_session, event, bot_pause_dict)
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 miss = 0
                 user_message = message_transform(event.text)
@@ -60,6 +60,7 @@ def main():
                 user_info = user_info[0]
                 bot_pause_dict.setdefault(user_info['id'], 0)
                 challenge_dict.setdefault(user_info['id'], 0)
+                litres_dict.setdefault(user_info['id'], 0)
                 if event.attachments:
                     try:
                         send_message('Дайте-ка, подумать', None)
@@ -71,43 +72,61 @@ def main():
                 if bot_pause_dict[user_info['id']] == 1:
                     break
                 if challenge_dict[user_info['id']] == 1:
-                    book_challenge(user_message, send_message, empty, message_transform, user_info, challenge_dict)
+                    book_challenge(user_message, send_message, empty, user_info, challenge_dict)
+                    break
+                if litres_dict[user_info['id']] == 1:
+                    lr.faq(user_message, user_info, send_message, empty, bot_pause_dict, litres_dict)
+                    if bot_pause_dict[user_info['id']] == 1:
+                        send_message(t.staff_answer, None)
                     break
                 for word in user_message:
-                    if word in Text.list_of_greeting:
+                    if (user_info['id'] in ac.admin_id_list) and (word in ac.command_list):
+                        ac.terminal(user_message, send_message)
+                        break
+                    if word in t.list_of_greeting:
                         if user_info['id'] not in user_list:
                             user_list.append(user_info['id'])
-                            send_message(user_info['first_name'] + Text.hello_message,
-                                         new_keyboard(keyboard.function_keyboard))
-                            send_message('А еще я умею понимать голосовые сообщения!\n'
-                                         'Попробуйте!', None)
+                            send_message(user_info['first_name'] + t.first_greeting, new_keyboard(keyboard.function_keyboard))
+                            send_message(t.speech, None)
+                            send_message(t.connection, new_keyboard(keyboard.call_staff))
                         else:
                             send_message(
-                                user_info['first_name'] + str(', категорически приветствую! Напомниаю, что я могу: '),
+                                user_info['first_name'] + t.second_greeting,
                                 new_keyboard(keyboard.function_keyboard))
-                    elif word in Text.renewal_list:
-                        send_message(user_info['first_name'] + str(', Вы можете продлить книги здесь'),
-                                     new_keyboard(keyboard.link_keyboard))
+                            send_message(t.connection, new_keyboard(keyboard.call_staff))
+                    elif word in t.renewal_list:
+                        send_message(user_info['first_name'] + t.renewal, new_keyboard(keyboard.link_keyboard))
+                    elif word in t.time_list:
+                        send_message(t.time, None)
+                    elif word in t.litres_list:
+                        litres_dict[user_info['id']] = 1
+                        send_message(t.litres, new_keyboard(keyboard.litres_keyboard))
+                        send_message(t.connection, new_keyboard(keyboard.call_staff))
                     elif word == 'видео-лекции':
                         send_message(user_info['first_name'] + str(', вот что у нас есть.'),
                                      None)
                         send_message('Лектор: Ольга Сергеевна Сапанжа', new_keyboard(keyboard.olga_link_keyboard))
                         send_message('Лектор: ???', new_keyboard(keyboard.unknown_link_keyboard))
                     elif word == 'рекомендация':
-                        send_message(empty, new_keyboard(keyboard.recommend_link_keyboard))
+                        special_send_message('wall', -43349586, 7417)
                     elif word == ('книжный' or 'вызов'):
                         challenge_dict[user_info['id']] = 1
                         start_challenge(vk_session, event, send_message, empty, user_info)
+                    elif word in t.connection_list:
+                        bot_pause_dict[user_info['id']] = 1
+                        send_message(t.staff_answer, None)
                     else:
                         miss += 1
-                if ('сотрудником' in user_message) or ('связаться' in user_message):
-                    bot_pause_dict[user_info['id']] = 1
-                elif miss == len(user_message):
+                if miss == len(user_message):
                     send_message(
-                        user_info['first_name'] + ', Климент Аркадьевич может предложить',
+                        user_info['first_name'] + t.suggestion,
                         new_keyboard(keyboard.function_keyboard))
-                    send_message('Или Вы можете связаться с сотрудником билиотеки', new_keyboard(keyboard.call_staff))
+                    send_message(t.connection, new_keyboard(keyboard.call_staff))
 
 
 if __name__ == '__main__':
-    main()
+    while True:
+        try:
+            main()
+        except Exception as e:
+            print('Something going wrong.', e)

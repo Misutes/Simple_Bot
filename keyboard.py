@@ -27,17 +27,19 @@ def new_keyboard(keyboard):
     return keyboard
 
 
-function_keyboard ={
+function_keyboard = {
     "inline": True,
     "buttons": [
             [get_text_buttons(label='Продление книги', color='positive')],
+            [get_text_buttons(label='Режим работы/Адрес', color='positive')],
+            [get_text_buttons(label='ЛитРес', color='positive')],
             [get_text_buttons(label='Видео-лекции', color='positive')],
-            [get_text_buttons(label='Рекомендация', color='primary')],
+            [get_text_buttons(label='Рекомендация', color='positive')],
             [get_text_buttons(label='Книжный вызов', color='primary')]
     ]
 }
 
-book_chal_keyboard ={
+book_chal_keyboard = {
     "inline": True,
     "buttons": [
         [get_text_buttons(label='Принять вызов!', color='positive')],
@@ -61,19 +63,11 @@ call_staff = {
     "inline": True,
     "buttons": [
         [
-            get_text_buttons(label='Связаться с сотрудником', color='positive')
+            get_text_buttons(label='Связаться с библиотекарем', color='positive')
         ]
     ]
 }
 
-recommend_link_keyboard = {
-    "inline": True,
-    "buttons": [
-        [get_link_buttons('Модели сезона весна 45г.',
-                          'https://vk.com/timiriazevka?z=video-43349586_456239079%2F4a35bcaaa3601a6627%2Fpl_wall_-43349586')],
-
-    ]
-}
 
 olga_link_keyboard = {
     "inline": True,
@@ -95,11 +89,32 @@ unknown_link_keyboard = {
     ]
 }
 
-litres_link_keyboard = {
+challenge_book_link_keyboard = {
     "inline": True,
     "buttons": [
         [get_link_buttons('10 правил Бигуна',
                           'https://www.litres.ru/patrik-dzh-holl/minet-10-pravil-kotorye-ty-dolzhna-znat/')],
+
+    ]
+}
+
+litres_keyboard = {
+    "inline": True,
+    "buttons": [
+        [get_text_buttons(label='Что это такое?', color='positive')],
+        [get_text_buttons(label='Как получить доступ?', color='positive')],
+        [get_link_buttons('Правила пользования',
+                          'https://vk.com/@timiriazevka-pravila-polzovaniya-litres')],
+        [get_text_buttons(label='Уйти', color='primary')],
+
+    ]
+}
+
+access_link = {
+    "inline": True,
+    "buttons": [
+        [get_link_buttons('Получить доступ',
+                          'https://vk.com/app6013442_-43349586?form_id=2#form_id=2')],
 
     ]
 }
