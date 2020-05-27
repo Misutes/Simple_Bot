@@ -2,6 +2,7 @@ import keyboard
 from keyboard import new_keyboard
 import Text as t
 
+
 # меню ЛитРес
 def faq(message, info, send_func, user_check_dict):
     faq_var = True

@@ -130,6 +130,7 @@ def main():
                         start_challenge(vk_session, event, send_message, empty, user_info)
                     # если пользователь хочет связаться с сотрудником
                     elif word in t.connection_list:
+                        print(1)
                         user_check_dict[user_info['id']]['pause'] = 1
                         send_message(t.staff_answer, None)
                     # если бот не понял слово в сообщении

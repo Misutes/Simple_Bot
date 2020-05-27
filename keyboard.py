@@ -68,9 +68,7 @@ link_keyboard = {
 call_staff = {
     "inline": True,
     "buttons": [
-        [
-            get_text_buttons(label='Связаться с библиотекарем', color='positive')
-        ]
+        [get_text_buttons(label='Связаться с библиотекарем', color='positive')]
     ]
 }
 
@@ -100,8 +98,8 @@ unknown_link_keyboard = {
 challenge_book_link_keyboard = {
     "inline": True,
     "buttons": [
-        [get_link_buttons('10 правил Бигуна',
-                          'https://www.litres.ru/patrik-dzh-holl/minet-10-pravil-kotorye-ty-dolzhna-znat/')],
+        [get_link_buttons('Название книги',
+                          'https://www.litres.ru/')],
 
     ]
 }
