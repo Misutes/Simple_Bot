@@ -13,11 +13,11 @@ def bot_edit_message(session, event, message):
 
 
 # подключение бота в работу
-def bot_return(session, event, user_check_dict):
+def bot_return(session, event, user_check_dict, special, args):
     if 'бот' == event.text.lower():
         user_check_dict[event.user_id]['pause'] = 0
         bot_edit_message(session, event, t.edit)
-
+        special(*args)
 
 # терминал управления ботом
 def terminal(message, message_function):
