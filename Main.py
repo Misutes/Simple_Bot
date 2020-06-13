@@ -1,17 +1,19 @@
+from keyboard import new_keyboard
+from challenge import start_challenge, book_challenge
+from vk_api.longpoll import VkLongPoll, VkEventType
+
 import json
 import keyboard
 import vk_api
-from vk_api.longpoll import VkLongPoll, VkEventType
-
 import random
 import Speech
+import regex as re
 import Text as t
 import admin_command as ac
 import litres as lr
 import recommend as rc
 import requests as rq
-from keyboard import new_keyboard
-from challenge import start_challenge, book_challenge
+import dialogflow.google_ai as ai
 
 
 token = '79eee7ae818b1db0d38b95f8911b1576e3d3a325c3622f6feaead4f3de1b09cdb0285cc9ac8308fb471f2'
@@ -25,6 +27,8 @@ user_check_dict = {}
 
 empty = '&#4448;'
 
+missunderstanding = {'меню литрес': [], 'что почитать': []}
+
 
 def send_message(message, keyboard):
     vk_session.method('messages.send', {
@@ -35,6 +39,13 @@ def send_message(message, keyboard):
     })
 
 
+def stop_time_out():
+    vk_session.method('messages.send', {
+        'user_id': '122226430',
+        'message': empty,
+        "random_id": 0,
+    })
+
 # отправляет какое-либо вложение
 def special_send_message(type, owner_id, media_id):
     owner_id = str(owner_id)
@@ -44,20 +55,29 @@ def special_send_message(type, owner_id, media_id):
                       {'user_id': event.user_id, 'attachment': media, 'random_id': random.randint(0, 10 ** 10)})
 
 
+# трансформирование входящего сообщения
 def message_transform(element):
     return (element.lower()).split(' ')
 
 
+# очистка слова от всех постаронних символов
+def clear(word):
+    return re.sub(r'[^\w\s]', '', word)
+
+# загрузка изображений в скрытый альбом
 def upload(photo):
     upload_url = vk_session.method('photos.getMessagesUploadServer')['upload_url']
     upload_photo = rq.post(upload_url, files={'photo': open(photo, 'rb')}).json()
-    save_photo = vk_session.method('photos.saveMessagesPhoto', {'server': upload_photo['server'], 'photo': upload_photo['photo'], 'hash': upload_photo['hash']})[0]
+    save_photo = vk_session.method('photos.saveMessagesPhoto',
+                                   {'server': upload_photo['server'], 'photo': upload_photo['photo'],
+                                    'hash': upload_photo['hash']})[0]
     type = 'photo'
     owner_id = save_photo['owner_id']
     media_id = save_photo['id']
     return type, owner_id, media_id
 
 
+# загрузка необходимых изображений
 hi_pic = [upload('pictures/hi_1.png'), upload('pictures/hi_2.png')]
 dont_know = [upload('pictures/dont_know_1.png'), upload('pictures/dont_know_2.png')]
 poster = upload('pictures/poster.png')
@@ -71,17 +91,19 @@ def main():
         for event in longpoll.listen():
             greeting_pic = random.choice(hi_pic)
             if event.type == VkEventType.MESSAGE_NEW and event.from_me:
-                # позволяет закончить общение, если написать "бот"
+                # позволяет закончить общение, если написать "бот" или поставить на паузу
                 if len([key for key in event.message_flags]) == 3:
                     ac.bot_return(vk_session, event, user_check_dict, special_send_message, greeting_pic)
             # создает переменную "непонятых слов", преобразует сообщение от пользователя и получает информацию о нем
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 miss = 0
-                user_message = message_transform(event.text)
+                message = message_transform(event.text)
+                user_message = [clear(word) for word in message]
                 user_info = session_api.users.get(user_ids=event.user_id)
                 user_info = user_info[0]
                 # создает словарь с информацией о позиции пользоватедя: пауза, челендж, литрес
-                user_check_dict.setdefault(user_info['id'], {'pause': 0, 'challenge': 0, 'litres': 0, 'recommendation': 0})
+                user_check_dict.setdefault(user_info['id'],
+                                           {'pause': 0, 'challenge': 0, 'litres': 0, 'recommendation': 0})
                 # пробует распознать голосовое сообщение и преобразовать его в текст
                 if event.attachments:
                     try:
@@ -96,14 +118,14 @@ def main():
                     break
                 # если человек внутри меню "литрес"
                 elif user_check_dict[user_info['id']]['litres'] == 1:
-                    lr.faq(user_message, user_info, send_message, user_check_dict)
+                    lr.faq(event, user_message, user_info, send_message, special_send_message, user_check_dict, missunderstanding, bye)
                     # если внутри "литрес" захотел связаться с библиотекарем
                     if user_check_dict[user_info['id']]['pause'] == 1:
                         send_message(t.staff_answer, None)
                     break
                 # если человек внутри меня "рекомендация"
                 elif user_check_dict[user_info['id']]['recommendation'] == 1:
-                    rc.recommend(user_message, user_info, send_message, special_send_message, user_check_dict)
+                    rc.recommend(event, user_message, user_info, send_message, special_send_message, user_check_dict, missunderstanding, bye)
                     break
                 # если бот в "челлендже", отключает основные функции и работает по особому скрипту
                 elif user_check_dict[user_info['id']]['challenge'] == 1:
@@ -122,13 +144,15 @@ def main():
                         if user_info['id'] not in user_list:
                             user_list.append(user_info['id'])
                             special_send_message(*greeting_pic)
-                            send_message(user_info['first_name'] + f', {greeting}' + t.first_greeting, new_keyboard(keyboard.function_keyboard))
+                            send_message(user_info['first_name'] + f', {greeting}' + t.first_greeting,
+                                         new_keyboard(keyboard.function_keyboard))
                             send_message(t.speech, None)
                             send_message(t.connection, new_keyboard(keyboard.call_staff))
                         # иначе поприветствует его
                         else:
                             special_send_message(*greeting_pic)
-                            send_message(user_info['first_name'] + f', {greeting}', new_keyboard(keyboard.function_keyboard))
+                            send_message(user_info['first_name'] + f', {greeting}',
+                                         new_keyboard(keyboard.function_keyboard))
                             send_message(t.connection, new_keyboard(keyboard.call_staff))
                     # если слово в списке команд "продления книги"
                     elif word in t.renewal_list:
@@ -143,7 +167,8 @@ def main():
                     # экскурсии
                     elif word in t.excursion_call:
                         special_send_message(*excursion)
-                        send_message(t.excursion, new_keyboard(keyboard.excursion_keyboard))
+                        send_message(t.excursion, new_keyboard(keyboard.excursion_keyboard_one))
+                        send_message(empty, new_keyboard(keyboard.excursion_keyboard_two))
                     # если слово в списке команд для работы с ЛитРес, выдает стартовое сообщение и отправляет пользователя в меню"Литрес"
                     elif word in t.litres_list:
                         user_check_dict[user_info['id']]['litres'] = 1
@@ -162,30 +187,41 @@ def main():
                         send_message(t.poster, new_keyboard(keyboard.poster_keyboard))
                     # если слово в списке команд "Что почитать"
                     elif word in t.recommendation:
-                        send_message(user_info['first_name'] + t.recomm_text, new_keyboard(keyboard.recommendation_keyboard))
+                        send_message(user_info['first_name'] + t.recomm_text,
+                                     new_keyboard(keyboard.recommendation_keyboard))
                         user_check_dict[user_info['id']]['recommendation'] = 1
                     # если слово в списке команд "книжный челлендж", выдает сообщение и запускает скрипт челленджа
                     elif word in t.challenge_words:
                         user_check_dict[user_info['id']]['challenge'] = 1
                         start_challenge(vk_session, event, send_message, empty, user_info)
+                    # Если интересно имя бота
+                    elif word in t.name_call:
+                        send_message(t.name, None)
+                    # Если интересны создатели
+                    elif word in t.creator_call:
+                        send_message(t.creator, None)
                     # если пользователь хочет связаться с сотрудником
                     elif word in t.connection_list:
                         user_check_dict[user_info['id']]['pause'] = 1
                         send_message(t.staff_answer, None)
-                    # если бот не понял слово в сообщении
+                    # если с ботоп прощаются или благодарят
                     elif word in t.parting:
-                        special_send_message(bye)
+                        special_send_message(*bye)
                     else:
                         miss += 1
                 # если бот не понял все слова
                 if miss == len(user_message):
-                    print(event.text)
-                    print(event.text)
-                    dont = random.choice(dont_know)
-                    special_send_message(*dont)
-                    send_message(user_info['first_name'] + t.suggestion, new_keyboard(keyboard.function_keyboard))
-                    send_message(t.connection, new_keyboard(keyboard.call_staff))
+                    respons = ai.response(event.text)
+                    if respons == 'error':
+                        dont = random.choice(dont_know)
+                        special_send_message(*dont)
+                        send_message(user_info['first_name'] + t.suggestion, new_keyboard(keyboard.function_keyboard))
+                        send_message(t.connection, new_keyboard(keyboard.call_staff))
+                    else:
+                        send_message(respons, None)
 
+
+print('Bot is ready!')
 
 
 if __name__ == '__main__':

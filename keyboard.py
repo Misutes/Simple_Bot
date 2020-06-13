@@ -60,8 +60,7 @@ link_keyboard = {
     "inline": True,
     "buttons": [
         [
-            get_link_buttons('Продление книги',
-                             'https://vk.com/app6013442_-43349586?form_id=1#form_id=1')
+            get_link_buttons('Продление книги', 'https://vk.com/app6013442_-43349586?form_id=1#form_id=1')
         ]
     ]
 }
@@ -70,7 +69,8 @@ link_keyboard = {
 call_staff = {
     "inline": True,
     "buttons": [
-        [get_text_buttons(label='Связаться с библиотекарем', color='positive')]
+        [get_text_buttons(label='Связаться с библиотекарем', color='positive')],
+        [get_link_buttons('Сотрудничество', 'https://docs.google.com/forms/d/e/1FAIpQLSegQmN6POvXBMBUY0Z0KNxgSpn02CVK854IOOmZd4ysKwe4uQ/viewform')]
     ]
 }
 
@@ -85,7 +85,9 @@ first_lecture_keyboard = {
         [get_link_buttons('Арт-мэм',
                           'https://vk.com/wall-43349586_7554?z=video-43349586_456239081%2F56e2be2df1ab037431%2Fpl_post_-43349586_7554')],
         [get_link_buttons('Советский балет в Японии',
-                          'https://vk.com/wall-43349586_7683?z=video-43349586_456239084%2Fc723d97d7a51206b28%2Fpl_post_-43349586_7683')]
+                          'https://vk.com/wall-43349586_7683?z=video-43349586_456239084%2Fc723d97d7a51206b28%2Fpl_post_-43349586_7683')],
+        [get_link_buttons('"Честное слово" Л.Пантелеев',
+                          'https://vk.com/video-43349586_456239091?list=338bed4e0923fe988b')]
 
     ]
 }
@@ -157,30 +159,13 @@ recommendation_keyboard = {
     "buttons": [
         [get_text_buttons(label='Новинки', color='positive')],
         [get_text_buttons(label='Фантастика', color='positive'), get_text_buttons(label='Япония', color='positive')],
+        [get_text_buttons(label='Детективы', color='positive')],
         [get_text_buttons(label='Климент рекомендует!', color='primary')],
         [get_text_buttons(label='Уйти', color='positive')]
 
     ]
 }
 
-# ссылка на "Фантастику"
-fantastic_link = {
-    "inline": True,
-    "buttons": [
-        [get_link_buttons('Фантастика',
-                          'https://vk.com/wall-43349586?q=%23МирФантастики')],
-
-    ]
-}
-# ссылка на "Японию"
-japan_link = {
-    "inline": True,
-    "buttons": [
-        [get_link_buttons('Япония',
-                          'https://vk.com/timiriazevka/FromLibToJapan')],
-
-    ]
-}
 # ссылка на рекомендуемую книгу
 recommendation_link = {
     "inline": True,
@@ -202,7 +187,7 @@ poster_keyboard = {
 }
 
 # экскурсии
-excursion_keyboard = {
+excursion_keyboard_one = {
     "inline": True,
     "buttons": [
         [get_link_buttons('Часть 1', 'https://vk.cc/auXvnb'), get_link_buttons('Часть 2', 'https://vk.cc/auXvFq')],
@@ -210,6 +195,14 @@ excursion_keyboard = {
         [get_link_buttons('Часть 5', 'https://vk.cc/auXvLF'), get_link_buttons('Часть 6', 'https://vk.cc/auXvPG')],
         [get_link_buttons('Часть 7', 'https://vk.cc/auXvTd'), get_link_buttons('Часть 8', 'https://vk.cc/auXvUr')],
         [get_link_buttons('Часть 9', 'https://vk.cc/auXvVL'), get_link_buttons('Часть 10', 'https://vk.cc/auXvYA')]
+
+    ]
+}
+
+excursion_keyboard_two = {
+    "inline": True,
+    "buttons": [
+        [get_link_buttons('Часть 11', 'https://vk.cc/avBjl2')]
 
     ]
 }

@@ -14,10 +14,15 @@ def bot_edit_message(session, event, message):
 
 # подключение бота в работу
 def bot_return(session, event, user_check_dict, special, args):
+    # если администратор написал, бот отключится
+    if user_check_dict[event.user_id]['pause'] == 0:
+        user_check_dict[event.user_id]['pause'] = 1
+    # позволяет закончить общение, если написать "бот"
     if 'бот' == event.text.lower():
         user_check_dict[event.user_id]['pause'] = 0
         bot_edit_message(session, event, t.edit)
         special(*args)
+
 
 # терминал управления ботом
 def terminal(message, message_function):
