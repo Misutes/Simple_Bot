@@ -13,16 +13,15 @@ def bot_edit_message(session, event, message):
 
 
 # подключение бота в работу
-def bot_return(session, event, user_check_dict, special, args):
+def bot_return(session, event, database, special, args):
     # если администратор написал, бот отключится
-    if user_check_dict[event.user_id]['pause'] == 0:
-        user_check_dict[event.user_id]['pause'] = 1
+    if database.update_data('users', 'PAUSE', 0, event.user_id):
+        database.update_data('users', 'PAUSE', 1, event.user_id)
     # позволяет закончить общение, если написать "бот"
     if 'бот' == event.text.lower():
-        user_check_dict[event.user_id]['pause'] = 0
+        database.update_data('users', 'PAUSE', 0, event.user_id)
         bot_edit_message(session, event, t.edit)
         special(*args)
-
 
 # терминал управления ботом
 def terminal(message, message_function):

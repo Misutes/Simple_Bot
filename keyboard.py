@@ -65,6 +65,16 @@ link_keyboard = {
     ]
 }
 
+# ссылка для записи в библиотеку
+sing_keyboard = {
+    "inline": True,
+    "buttons": [
+        [
+            get_link_buttons('Записаться', 'https://vk.cc/avRZ3b')
+        ]
+    ]
+}
+
 # связь с сотрудником
 call_staff = {
     "inline": True,
@@ -87,7 +97,10 @@ first_lecture_keyboard = {
         [get_link_buttons('Советский балет в Японии',
                           'https://vk.com/wall-43349586_7683?z=video-43349586_456239084%2Fc723d97d7a51206b28%2Fpl_post_-43349586_7683')],
         [get_link_buttons('"Честное слово" Л.Пантелеев',
-                          'https://vk.com/video-43349586_456239091?list=338bed4e0923fe988b')]
+                          'https://vk.com/video-43349586_456239091?list=338bed4e0923fe988b')],
+        [get_link_buttons('Балет в советской культуре',
+                          'https://vk.com/timiriazevka?z=video-43349586_456239092%2F6b46df7aaf126d0333%2Fpl_wall_-43349586')]
+
 
     ]
 }
@@ -122,6 +135,15 @@ fourth_lecture_keyboard = {
     ]
 }
 
+# четвертый лектор
+fifth_lecture_keyboard = {
+    "inline": True,
+    "buttons": [
+        [get_link_buttons('«История старой квартиры»',
+                          'https://vk.com/timiriazevka?z=video-43349586_456239097%2F6a93e2028141fc0e99%2Fpl_wall_-43349586')],
+
+    ]
+}
 # книга для "Книжного вызова"
 challenge_book_link_keyboard = {
     "inline": True,
@@ -170,8 +192,8 @@ recommendation_keyboard = {
 recommendation_link = {
     "inline": True,
     "buttons": [
-        [get_link_buttons('Читать по ссылке',
-                          'https://www.litres.ru/edit-eva-eger/vybor/')],
+        [get_link_buttons('Забронировать',
+                          'https://lermontovka-spb.ru/services/booking/')],
 
     ]
 }
@@ -204,5 +226,14 @@ excursion_keyboard_two = {
     "buttons": [
         [get_link_buttons('Часть 11', 'https://vk.cc/avBjl2')]
 
+    ]
+}
+
+excursion_keyboard_three = {
+    "inline": True,
+    "buttons": [
+        [get_link_buttons('Часть 1', 'https://vk.cc/avKJNB'), get_link_buttons('Часть 2', 'https://vk.cc/aycMQb')],
+        [get_link_buttons('Часть 3', 'https://vk.cc/aycNif'), get_link_buttons('Часть 4', 'https://vk.cc/aycNW8')],
+        [get_link_buttons('Часть 5', 'https://vk.cc/aycO5o'), get_link_buttons('Часть 6', 'https://vk.cc/aycOg4')],
     ]
 }
