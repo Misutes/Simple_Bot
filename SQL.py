@@ -42,3 +42,10 @@ class Database:
         else:
             return False
 
+    def check_position(self, table, column, data, user_id):
+        self.cursor.execute(f"SELECT {column} FROM {table} WHERE {column}='{data}' and ID={user_id}")
+        if self.cursor.fetchone():
+            return True
+        else:
+            return False
+

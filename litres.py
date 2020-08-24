@@ -28,7 +28,7 @@ def faq(event, message, info, sm, ssm, database, media):
         else:
             miss += 1
     if miss > len(message)-1:
-        sm(t.help, None)
+        sm(t.help_litres, None)
         if not database.find_data('bag_words', 'LITRES', event.text):
             database.insert_data('bag_words', 'LITRES', event.text)
 

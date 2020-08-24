@@ -1,6 +1,7 @@
 import random
 import regex as re
 import requests as rq
+import Text as t
 
 
 class Reply:
@@ -42,7 +43,7 @@ class Reply:
         message_id = self.session.method('messages.getHistory', {
             'offset': 0,
             'count': 1,
-            'user_id': self.event.user_id,
+            'user_id': t.administrator_id,
             'rev': 0})['items'][0]['id']
 
         self.session.method('messages.delete', {

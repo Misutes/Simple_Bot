@@ -15,7 +15,7 @@ def bot_edit_message(session, event, message):
 # подключение бота в работу
 def bot_return(session, event, database, special, args):
     # если администратор написал, бот отключится
-    if database.update_data('users', 'PAUSE', 0, event.user_id):
+    if database.check_position('users', 'PAUSE', 0, event.user_id):
         database.update_data('users', 'PAUSE', 1, event.user_id)
     # позволяет закончить общение, если написать "бот"
     if 'бот' == event.text.lower():

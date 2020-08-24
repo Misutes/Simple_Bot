@@ -41,7 +41,7 @@ def main():
             reply = Reply(session=vk_session, event=event)
             greeting_picture = random.choice(greeting_pictures)
             if event.type == VkEventType.MESSAGE_NEW and event.from_me:
-                # позволяет закончить общение, если написать "бот" или поставить на паузу
+                # позволяет закончить общение, если написать "бот", или поставить на паузу
                 if len([key for key in event.message_flags]) == 3:
                     ac.bot_return(vk_session, event, database, reply.ssm, greeting_picture)
             # создает переменную "непонятых слов", преобразует сообщение от пользователя и получает информацию о нем
@@ -59,17 +59,18 @@ def main():
                     except KeyError:
                         pass
                 # если человек выбрал "паузу", бот не будет отвечать
-                if database.find_data('users', 'PAUSE', 1):
+                if database.check_position('users', 'PAUSE', 1, event.user_id):
                     break
                 # если человек внутри меню "литрес"
-                elif database.find_data('users', 'LITRES', 1):
+                elif database.check_position('users', 'LITRES', 1, event.user_id):
                     lr.faq(event, user_message, user_info, reply.sm, reply.ssm, database, bye)
                     # если внутри "литрес" захотел связаться с библиотекарем
-                    if database.find_data('users', 'pause', 1):
+                    if database.check_position('users', 'PAUSE', 1, event.user_id):
                         reply.sm(t.staff_answer, None)
                     break
                 # если человек внутри меня "рекомендация"
-                elif database.find_data('users', 'RECOMMENDATION', 1):
+
+                elif database.check_position('users', 'RECOMMENDATION', 1, event.user_id):
                     rc.recommend(event, user_message, user_info, reply.sm, reply.ssm, database, novelty, bye)
                     break
                 # если бот в "челлендже", отключает основные функции и работает по особому скрипту
@@ -186,14 +187,15 @@ def main():
                         reply.sm(answer, None)
 
 
-print('Bot is ready!')
+ready = 'Bot is ready!'
+print(ready)
 
 
 def sleep_breaker():
     response = Reply(vk_session, next(longpoll.listen()))
-    message = 'Я обноволися! И работаю дальше, Создатель!'
+    message = 'Я обновился! И работаю дальше, Создатель!'
     while True:
-        response.sfm('messages.send', '122226430', message)
+        response.sfm('messages.send', t.administrator_id, message)
         response.dm()
         time.sleep(10800)
 
@@ -206,7 +208,3 @@ if __name__ == '__main__':
         timer_thread.start()
     except Exception as e:
         print(str(dt.now()) + ':\n' + str(e))
-
-
-
-

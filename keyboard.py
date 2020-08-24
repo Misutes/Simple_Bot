@@ -181,7 +181,7 @@ recommendation_keyboard = {
     "buttons": [
         [get_text_buttons(label='Новинки', color='positive')],
         [get_text_buttons(label='Фантастика', color='positive'), get_text_buttons(label='Япония', color='positive')],
-        [get_text_buttons(label='Детективы', color='positive')],
+        [get_text_buttons(label='Детективы', color='positive'), get_text_buttons(label='Подростковая', color='positive')],
         [get_text_buttons(label='Климент рекомендует!', color='primary')],
         [get_text_buttons(label='Уйти', color='positive')]
 
@@ -194,6 +194,26 @@ recommendation_link = {
     "buttons": [
         [get_link_buttons('Забронировать',
                           'https://lermontovka-spb.ru/services/booking/')],
+
+    ]
+}
+
+# ссылка на новинки
+novelty_bookshelf_link = {
+    "inline": True,
+    "buttons": [
+        [get_link_buttons('Заглянуть на полку',
+                          'https://www.livelib.ru/bookshelf/1641382-knizhnye-novinki-vesnaleto-2020/listview/smalltiles')],
+
+    ]
+}
+
+# ссылка на подростковую
+teen_bookshelf_link = {
+    "inline": True,
+    "buttons": [
+        [get_link_buttons('Заглянуть на полку',
+                          'https://www.livelib.ru/bookshelf/1640287-knigi-dlya-podrostkov/listview/smalltiles')],
 
     ]
 }
