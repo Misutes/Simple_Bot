@@ -18,7 +18,7 @@ def send_preview(session, event):
 
 
 # отправляет вступительное сообщение с описанием челленджа
-def start_challenge(session, event, send_func, empty, info):
+def start_challenge(session, event, send_func, empty, user_name):
     global book_challenge_info_dict, accepted, performed
     send_preview(session, event)
     # описание книги
@@ -29,7 +29,7 @@ def start_challenge(session, event, send_func, empty, info):
 
 
 # меню челленджа
-def book_challenge(message, send_func, empty, info, user_check_dict):
+def book_challenge(message, send_func, empty, user_name, user_check_dict):
     global book_challenge_info_dict, accepted, performed
     challenge = True
     for word in message:

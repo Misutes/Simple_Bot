@@ -3,45 +3,57 @@ from keyboard import new_keyboard
 import Text as t
 import random
 
+quit_ = ['уйти']
+novelty_ = ['новинки']
+fantastic = ['фантастика']
+japan = ['япония']
+detective = ['детективы']
+adult = ['подростковая']
+recommendation = ['климент']
 
-# меню Что почитать?
-def recommend(event, message, info, sm, ssm, database, media_1, media_2):
-    miss = 0
+
+def recommend(event, message, sm, ssm, database, media_1, media_2):
+    miss_word = 0
+    user_name = str(database.find_data('users', 'NAME_', 'ID', event.user_id)[0])
+
+    def random_post(text, posts):
+        sm(text, None)
+        ssm('wall', t.group_id, random.choice(posts))
+
     for word in message:
-        # если пользователь хочет уйти, изменяет ему статус и отправляет сообщение
-        if word == 'уйти':
+
+        if word in quit_:
             database.update_data('users', 'RECOMMENDATION', 0, event.user_id)
-            sm(info['first_name'] + t.quit, new_keyboard(keyboard.function_keyboard))
+            sm(user_name + t.quit, new_keyboard(keyboard.function_keyboard))
             sm(t.connection, new_keyboard(keyboard.call_staff))
-        # пользователь хочет узнать о "Новинках"
-        elif word == 'новинки':
+
+        elif word in novelty_:
             sm(t.novelty, new_keyboard(keyboard.novelty_bookshelf_link))
-        # пользователь хочет узнать книги из категории "Фантастика"
-        elif word == 'фантастика':
-            sm(t.fantastic_literature, None)
-            ssm('wall', t.group_id, random.choice(t.fantastic))
-        # пользователь хочет узнать книги из категории "Япония"
-        elif word == 'япония':
-            sm(t.japan_literature, None)
-            ssm('wall', t.group_id, random.choice(t.japan))
-        # пользователь хочет узнать книги из категории "Детективы"
-        elif word == 'детективы':
-            sm(t.detective_literature, None)
-            ssm('wall', t.group_id, random.choice(t.detective))
-        # пользователь хочет узнать книги из категории "Подростковая"
+
+        elif word in fantastic:
+            random_post(t.fantastic_literature, t.fantastic)
+
+        elif word in japan:
+            random_post(t.japan_literature, t.japan)
+
+        elif word in detective:
+            random_post(t.detective_literature, t.detective)
+
         elif word == 'подростковая':
             sm(t.teen, new_keyboard(keyboard.teen_bookshelf_link))
-        # пользователь хочет узнать что ему рекомендуют
-        elif word == 'климент':
+
+        elif word in recommendation:
             ssm(*media_1)
             sm(t.recommendation_description, new_keyboard(keyboard.recommendation_link))
-        # если с ботоп прощаются или благодарят
+
         elif word in t.parting:
             ssm(*media_2)
+
         else:
-            miss += 1
-    # ответ на неизвестную команду
-    if miss > len(message)-1:
+            miss_word += 1
+
+    if miss_word > len(message)-1:
         sm(t.help_recommendation, None)
-        if not database.find_data('bag_words', 'RECOMMENDATION', event.text):
+        if not database.find_data('bag_words', 'RECOMMENDATION', 'RECOMMENDATION', event.text):
             database.insert_data('bag_words', 'RECOMMENDATION', event.text)
+

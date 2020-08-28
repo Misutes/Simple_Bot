@@ -38,6 +38,11 @@ class Reply:
             "random_id": 0
         })
 
+    # Massive send massage
+    def msm(self, list_):
+        for element in list_:
+            self.sm(*element)
+
     # Delete message
     def dm(self):
         message_id = self.session.method('messages.getHistory', {
@@ -52,10 +57,13 @@ class Reply:
             "delete_for_all": 1
         })
 
-    # Massive send massage
-    def msm(self, list_):
-        for element in list_:
-            self.sm(*element)
+    # Edit message
+    def em(self, message):
+        self.session.method('messages.edit', {
+            'peer_id': self.event.user_id,
+            'message_id': self.event.message_id,
+            'message': message
+        })
 
 
 class Request:

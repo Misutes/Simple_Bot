@@ -203,7 +203,7 @@ novelty_bookshelf_link = {
     "inline": True,
     "buttons": [
         [get_link_buttons('Заглянуть на полку',
-                          'https://www.livelib.ru/bookshelf/1641382-knizhnye-novinki-vesnaleto-2020/listview/smalltiles')],
+                          'https://www.livelib.ru/bookshelf/1645387-knizhnye-novinki-avgustsentyabr-2020/listview/smalltiles')],
 
     ]
 }
