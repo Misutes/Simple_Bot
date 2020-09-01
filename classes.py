@@ -1,6 +1,8 @@
 import random
+
 import regex as re
 import requests as rq
+
 import Text as t
 
 

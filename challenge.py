@@ -1,5 +1,6 @@
-import Text as t
 import random
+
+import Text as t
 import keyboard
 from keyboard import new_keyboard
 

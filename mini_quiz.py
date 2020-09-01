@@ -1,7 +1,8 @@
+import time
+
+import Text as t
 import keyboard
 from keyboard import new_keyboard
-import time
-import Text as t
 
 quit_ = ['уйти']
 

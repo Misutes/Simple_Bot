@@ -1,6 +1,6 @@
+import Text as t
 import keyboard
 from keyboard import new_keyboard
-import Text as t
 
 quit_ = ['уйти']
 what_read = ['что']

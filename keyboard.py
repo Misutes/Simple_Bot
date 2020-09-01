@@ -99,11 +99,20 @@ first_lecture_keyboard = {
         [get_link_buttons('"Честное слово" Л.Пантелеев',
                           'https://vk.com/video-43349586_456239091?list=338bed4e0923fe988b')],
         [get_link_buttons('Балет в советской культуре',
-                          'https://vk.com/timiriazevka?z=video-43349586_456239092%2F6b46df7aaf126d0333%2Fpl_wall_-43349586')]
+                          'https://vk.com/timiriazevka?z=video-43349586_456239092%2F6b46df7aaf126d0333%2Fpl_wall_-43349586')],
 
 
     ]
 }
+
+first_lecture_two_keyboard = {
+    "inline": True,
+    "buttons": [
+        [get_link_buttons('Советская школьная повседневность',
+                          'https://vk.com/timiriazevka?z=video-43349586_456239103%2Fa809bef509fb8dd504%2Fpl_wall_-43349586')]
+    ]
+}
+
 
 # второй лектор
 second_lecture_keyboard = {

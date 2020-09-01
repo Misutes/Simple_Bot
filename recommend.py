@@ -1,15 +1,16 @@
+import random
+
+import Text as t
 import keyboard
 from keyboard import new_keyboard
-import Text as t
-import random
 
 quit_ = ['уйти']
 novelty_ = ['новинки']
 fantastic = ['фантастика']
 japan = ['япония']
-detective = ['детективы']
-adult = ['подростковая']
-recommendation = ['климент']
+detective = ['детективы', 'детектив']
+adult = ['подростковая', 'детей']
+recommendation = ['климент', 'посоветуйте']
 
 
 def recommend(event, message, sm, ssm, database, media_1, media_2):

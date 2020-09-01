@@ -1,23 +1,23 @@
-from keyboard import new_keyboard
-# from challenge import start_challenge, book_challenge
-from vk_api.longpoll import VkLongPoll, VkEventType
-from classes import Reply, Request, Media
-from datetime import datetime as dt
-
 import json
-import keyboard
-import vk_api
 import random
 import time
+from datetime import datetime as dt
 
+import vk_api
+# from challenge import start_challenge, book_challenge
+from vk_api.longpoll import VkLongPoll, VkEventType
+
+import SQL
 import Speech
 import Text as t
 import admin_command as ac
+import dialogflow.google_ai as ai
+import keyboard
 import litres as lr
 import mini_quiz as dq
 import recommend as rc
-import dialogflow.google_ai as ai
-import SQL
+from classes import Reply, Request, Media
+from keyboard import new_keyboard
 
 token = '79eee7ae818b1db0d38b95f8911b1576e3d3a325c3622f6feaead4f3de1b09cdb0285cc9ac8308fb471f2'
 vk_session = vk_api.VkApi(token=token)
@@ -136,6 +136,7 @@ def main():
                         lecture = [
                             (user_name + t.lecture_message, None),
                             (t.first_lecturer, new_keyboard(keyboard.first_lecture_keyboard)),
+                            (t.empty, new_keyboard(keyboard.first_lecture_two_keyboard)),
                             (t.second_lecturer, new_keyboard(keyboard.second_lecture_keyboard)),
                             (t.third_lecturer, new_keyboard(keyboard.third_lecture_keyboard)),
                             (t.fourth_lecturer, new_keyboard(keyboard.fourth_lecture_keyboard)),

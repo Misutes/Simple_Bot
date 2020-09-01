@@ -1,5 +1,6 @@
-import apiai
 import json
+
+import apiai
 
 token = '036101f6da9948318ac5f645a4eb4782'
 
