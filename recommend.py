@@ -18,7 +18,7 @@ def recommend(event, message, sm, ssm, database, media_1, media_2):
     user_name = str(database.find_data('users', 'NAME_', 'ID', event.user_id)[0])
 
     def random_post(text, posts):
-        sm(text, None)
+        sm(message=text)
         ssm('wall', t.group_id, random.choice(posts))
 
     for word in message:
@@ -54,7 +54,7 @@ def recommend(event, message, sm, ssm, database, media_1, media_2):
             miss_word += 1
 
     if miss_word > len(message)-1:
-        sm(t.help_recommendation, None)
+        sm(message=t.help_recommendation)
         if not database.find_data('bag_words', 'RECOMMENDATION', 'RECOMMENDATION', event.text):
             database.insert_data('bag_words', 'RECOMMENDATION', event.text)
 

@@ -54,29 +54,29 @@ def main():
                 user_name = str(database.find_data('users', 'NAME_', 'ID', event.user_id)[0])
                 if event.attachments:
                     try:
-                        reply.sm(t.recognition, None)
+                        reply.sm(message=t.recognition)
                         link = (json.loads(event.attachments['attachments']))[0]['audio_message']['link_mp3']
                         audio_message = Speech.audio_answer(link)
                         user_message = Request(audio_message).clear()
                     except KeyError:
-                        reply.sm(t.non_recognition, None)
+                        reply.sm(message=t.non_recognition)
 
                 if database.check_position('users', 'PAUSE', 1, event.user_id):
-                    break
+                    return
 
                 elif database.check_position('users', 'LITRES', 1, event.user_id):
                     lr.litres(event, user_message, reply.sm, reply.ssm, database, bye)
                     if database.check_position('users', 'PAUSE', 1, event.user_id):
-                        reply.sm(t.staff_answer, None)
-                    break
+                        reply.sm(message=t.staff_answer)
+                    return
 
                 elif database.check_position('users', 'RECOMMENDATION', 1, event.user_id):
                     rc.recommend(event, user_message, reply.sm, reply.ssm, database, novelty, bye)
-                    break
+                    return
 
                 elif database.check_position('users', 'QUIZ', 1, event.user_id):
                     dq.quiz(event, user_message, reply.sm, reply.ssm, database, dovlatov_media)
-                    break
+                    return
 
                 # elif database.find_data('users', 'CHALLENGE', 1):
                 # book_challenge(user_message, reply.sm, empty, user_info, database)
@@ -86,7 +86,7 @@ def main():
 
                     if (event.user_id in ac.admin_ids) and (word in ac.command_list):
                         ac.terminal(vk_session, event, database, reply.ssm, greeting_picture)
-                        break
+                        return
 
                     if word in t.list_of_greeting:
                         greeting = random.choice(t.list_of_greeting_bot)
@@ -102,7 +102,7 @@ def main():
                         else:
                             reply.ssm(*greeting_picture)
                             greeting_list = [
-                                (user_name + f', {greeting}', new_keyboard(keyboard.function_keyboard)),
+                                (user_name + greeting, new_keyboard(keyboard.function_keyboard)),
                                 (t.connection, new_keyboard(keyboard.call_staff))]
                             reply.msm(greeting_list)
 
@@ -114,7 +114,7 @@ def main():
 
                     elif word in t.expression_call:
                         expression = random.choice(t.expression)
-                        reply.sm(expression, None)
+                        reply.sm(message=expression)
 
                     elif word in t.excursion_call:
                         reply.ssm(*excursion)
@@ -154,28 +154,28 @@ def main():
 
                     elif word in t.start_quiz:
                         if database.check_position('quiz', 'ID', event.user_id, event.user_id):
-                            reply.sm(user_name + t.quiz_sorry, None)
+                            reply.sm(message=user_name + t.quiz_sorry)
                             break
                         database.update_data('quiz', 'QUESTION', 1, event.user_id)
                         database.update_data('users', 'QUIZ', 1, event.user_id)
                         database.insert_data('quiz', 'ID', event.user_id)
                         database.update_data('quiz', 'TIME_', int(time.time()), event.user_id)
-                        reply.sm(user_name + t.quiz_start_text, None)
-                        reply.sm(t.q_a[0][0], None)
+                        reply.sm(message=user_name + t.quiz_start_text)
+                        reply.sm(message=t.q_a[0][0])
 
                     # elif word in t.challenge_words:
                         # database.update_data('users', 'CHALLENGE', 1, event.user_id)
                         # start_challenge(vk_session, event, reply.sm, t.empty, user_info)
 
                     elif word in t.name_call:
-                        reply.sm(t.name, None)
+                        reply.sm(message=t.name)
 
                     elif word in t.creator_call:
-                        reply.sm(t.creator, None)
+                        reply.sm(message=t.creator)
 
                     elif word in t.connection_list:
                         database.update_data('users', 'PAUSE', 1, event.user_id)
-                        reply.sm(t.staff_answer, None)
+                        reply.sm(message=t.staff_answer)
 
                     elif word in t.parting:
                         reply.ssm(*bye)
@@ -195,16 +195,18 @@ def main():
                         ]
                         reply.msm(non_answer)
                     else:
-                        reply.sm(answer, None)
+                        reply.sm(message=answer)
 
 
 if __name__ == '__main__':
-    ready = 'Start at: '
+    restart = 'Restart at: '
     update = 'Я обновился! И работаю дальше, Создатель!'
-    timestamp = str(dt.now())
-    print(ready + timestamp)
     while True:
         try:
+            print(restart + str(dt.now()))
+            main()
+        except Exception as e:
+            print(str(dt.now()) + ': ' + str(e))
             vk_session.method('messages.send', {
                 'user_id': t.administrator_id,
                 'message': update,
@@ -214,7 +216,5 @@ if __name__ == '__main__':
             response = Reply(vk_session, next(longpoll.listen()))
             response.dm()
             print(str(dt.now()) + ': ' + update)
-            main()
-        except Exception as e:
-            print(str(dt.now()) + ': ' + str(e))
+
 

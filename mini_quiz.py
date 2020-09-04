@@ -11,20 +11,21 @@ def quiz(event, message, sm, ssm, database, media):
     user_name = str(database.find_data('users', 'NAME_', 'ID', event.user_id)[0])
 
     def media_question(i, k):
-        sm(t.quiz_right + t.answer[position], None)
+        sm(message=t.quiz_right + t.answer[position])
         ssm(*media[i][k])
-        sm(t.q_a[position + 1][0], None)
+        sm(message=t.q_a[position + 1][0])
 
     def media_answer(i, k):
-        sm(t.quiz_right + t.answer[position], None)
+        sm(message=t.quiz_right + t.answer[position])
         ssm(*media[i][k])
-        sm(t.q_a[position + 1][0], None)
+        sm(message=t.q_a[position + 1][0])
 
     for word in message:
         if word in quit_:
             database.update_data('users', 'QUIZ', 0, event.user_id)
             sm(user_name + t.quit, new_keyboard(keyboard.function_keyboard))
             sm(t.connection, new_keyboard(keyboard.call_staff))
+            return
 
     position = database.find_data('quiz', 'QUESTION', 'ID', event.user_id)[0]-1
     if str(message[0]) == str(t.q_a[position][1]):
@@ -41,8 +42,8 @@ def quiz(event, message, sm, ssm, database, media):
         elif position == 7:
             media_answer(1, 1)
         else:
-            sm(t.quiz_right + t.answer[position], None)
-            sm(t.q_a[position + 1][0], None)
+            sm(message=t.quiz_right + t.answer[position])
+            sm(message=t.q_a[position + 1][0])
 
     else:
         end = time.time()
@@ -51,8 +52,8 @@ def quiz(event, message, sm, ssm, database, media):
         database.update_data('users', 'QUIZ', 0, event.user_id)
 
         count = str(database.count_data('quiz', 'QUESTION', 10)[0])
-        sm(t.quiz_count + count, None)
-        sm(user_name + t.quiz_end_text, None)
+        sm(message=user_name + t.quiz_end_text)
+        sm(message=t.quiz_count + count)
 
         sm(t.quit_2, new_keyboard(keyboard.function_keyboard))
         sm(t.connection, new_keyboard(keyboard.call_staff))

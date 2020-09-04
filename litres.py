@@ -18,7 +18,7 @@ def litres(event, message, sm, ssm, database, media):
             sm(t.connection, new_keyboard(keyboard.call_staff))
 
         elif word in what_read:
-            sm(t.litres_what, None)
+            sm(message=t.litres_what)
 
         elif word in access:
             sm(t.litres_how, new_keyboard(keyboard.access_link))
@@ -34,7 +34,7 @@ def litres(event, message, sm, ssm, database, media):
             miss_word += 1
 
     if miss_word > len(message)-1:
-        sm(t.help_litres, None)
+        sm(message=t.help_litres)
         if not database.find_data('bag_words', 'LITRES', 'LITRES', event.text):
             database.insert_data('bag_words', 'LITRES', event.text)
 

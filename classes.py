@@ -13,7 +13,7 @@ class Reply:
         self.event = event
 
     # Send message
-    def sm(self, message, keyboard):
+    def sm(self, message=t.empty, keyboard=None):
         self.session.method('messages.send', {
             'user_id': self.event.user_id,
             'message': message,
@@ -33,9 +33,9 @@ class Reply:
         })
 
     # Send free message
-    def sfm(self, method, id, message):
+    def sfm(self, method, user_id, message):
         self.session.method(method, {
-            "user_id": id,
+            "user_id": user_id,
             "message": message,
             "random_id": 0
         })
@@ -75,7 +75,8 @@ class Request:
 
     def clear(self):
         raw_list = (self.raw_message.lower()).split(' ')
-        return [re.sub(r'[^\w\s]', '', word) for word in raw_list]
+        raw_list = [re.sub(r'[^\w\s]', '', word) for word in raw_list]
+        return [re.sub(r'[quot]', '', word) for word in raw_list]
 
 
 class Media:
@@ -87,8 +88,8 @@ class Media:
         upload_url = self.session.method('photos.getMessagesUploadServer')['upload_url']
         upload_photo = rq.post(upload_url, files={'photo': open(photo, 'rb')}).json()
         save_photo = self.session.method('photos.saveMessagesPhoto',
-                                       {'server': upload_photo['server'], 'photo': upload_photo['photo'],
-                                        'hash': upload_photo['hash']})[0]
+                                         {'server': upload_photo['server'], 'photo': upload_photo['photo'],
+                                          'hash': upload_photo['hash']})[0]
         media_type = 'photo'
         owner_id = save_photo['owner_id']
         media_id = save_photo['id']
