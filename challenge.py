@@ -38,7 +38,7 @@ def book_challenge(message, send_func, empty, user_name, user_check_dict):
         if word == 'уйти':
             challenge = False
             user_check_dict[info['id']]['challenge'] = 0
-            send_func(info['first_name'] + t.suggestion, new_keyboard(keyboard.function_keyboard))
+            send_func(info['first_name'] + t.suggestion, new_keyboard(keyboard.main_menu))
         # если пользователь решил принять вызов
         elif word == 'принять':
             # создается его статус-словарь для этого челленджа

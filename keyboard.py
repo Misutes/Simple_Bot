@@ -25,25 +25,25 @@ def get_link_buttons(label, link):
 
 
 # создает json клавиатуру
-def new_keyboard(keyboard):
+def json_keyboard(keyboard):
     keyboard = str(json.dumps(keyboard, ensure_ascii=False))
     return keyboard
 
 
 # основное меню
-function_keyboard = {
+main_menu = json_keyboard({
     "inline": True,
     "buttons": [
         [get_text_buttons(label='Режим работы/Адрес', color='positive')],
         [get_text_buttons(label='Продлить книги', color='positive')],
-        [get_text_buttons(label='Афиша', color='positive')],
+        [get_text_buttons(label='Мероприятия', color='positive')],
         [get_text_buttons(label='Что почитать?', color='positive'), get_text_buttons(label='ЛитРес', color='positive')],
         [get_text_buttons(label='Видео-лекции', color='positive'),
          get_text_buttons(label='Экскурсии', color='positive')],
         [get_text_buttons(label='Цитата дня', color='primary')]
         # [get_text_buttons(label='Книжный вызов', color='primary')]
     ]
-}
+})
 
 # меню "Книжного вызова"
 book_challenge_keyboard = {
@@ -56,36 +56,32 @@ book_challenge_keyboard = {
 }
 
 # ссылка для пробления книги
-link_keyboard = {
+renewal_book = json_keyboard({
     "inline": True,
     "buttons": [
         [
             get_link_buttons('Продление книги', 'https://vk.com/app6013442_-43349586?form_id=1#form_id=1')
         ]
     ]
-}
-
-# ссылка для записи в библиотеку
-sing_keyboard = {
-    "inline": True,
-    "buttons": [
-        [
-            get_link_buttons('Записаться', 'https://vk.cc/avRZ3b')
-        ]
-    ]
-}
+})
 
 # связь с сотрудником
-call_staff = {
+staff_call = json_keyboard({
     "inline": True,
     "buttons": [
         [get_text_buttons(label='Связаться с библиотекарем', color='positive')],
         [get_link_buttons('Сотрудничество', 'https://docs.google.com/forms/d/e/1FAIpQLSegQmN6POvXBMBUY0Z0KNxgSpn02CVK854IOOmZd4ysKwe4uQ/viewform')]
     ]
-}
+})
 
+geo_position = json_keyboard({
+    "inline": True,
+    "buttons": [
+        [get_link_buttons('Зяглянуть к нам', 'https://go.2gis.com/dglte')]
+    ]
+})
 # первый лектор
-first_lecture_keyboard = {
+first_lecturer = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Культура Ленинграда 45-65 гг',
@@ -103,56 +99,57 @@ first_lecture_keyboard = {
 
 
     ]
-}
+})
 
-first_lecture_two_keyboard = {
+first_lecturer_two = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Советская школьная повседневность',
                           'https://vk.com/timiriazevka?z=video-43349586_456239103%2Fa809bef509fb8dd504%2Fpl_wall_-43349586')]
     ]
-}
+})
 
 
 # второй лектор
-second_lecture_keyboard = {
+second_lecturer = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Бродский и Петербург',
                           'https://vk.com/timiriazevka?z=video-43349586_456239088%2F1ca892e1970b5c468c%2Fpl_wall_-43349586')],
 
     ]
-}
+})
 
 # третий лектор
-third_lecture_keyboard = {
+third_lecturer = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Основатели японского буддизма',
                           'https://vk.com/wall-43349586_7661?z=video-43349586_456239083%2F872fb2748326b1a84b%2Fpl_post_-43349586_7661')],
 
     ]
-}
+})
 
 # четвертый лектор
-fourth_lecture_keyboard = {
+fourth_lecturer = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Три имени библиотеки',
                           'https://vk.com/wall-43349586_7705?z=video-43349586_456239085%2Fe45ea703b650827f13%2Fpl_post_-43349586_7705')],
 
     ]
-}
+})
 
 # четвертый лектор
-fifth_lecture_keyboard = {
+fifth_lecturer = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('«История старой квартиры»',
                           'https://vk.com/timiriazevka?z=video-43349586_456239097%2F6a93e2028141fc0e99%2Fpl_wall_-43349586')],
 
     ]
-}
+})
+
 # книга для "Книжного вызова"
 challenge_book_link_keyboard = {
     "inline": True,
@@ -164,7 +161,7 @@ challenge_book_link_keyboard = {
 }
 
 # меню "ЛитРес"
-litres_keyboard = {
+litres_menu = json_keyboard({
     "inline": True,
     "buttons": [
         [get_text_buttons(label='Что это такое?', color='positive')],
@@ -174,18 +171,19 @@ litres_keyboard = {
         [get_text_buttons(label='Уйти', color='primary')],
 
     ]
-}
+})
 
 # получения доступа к "ЛитРес"
-access_link = {
+get_litres = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Получить доступ',
                           'https://vk.com/app6013442_-43349586?form_id=2#form_id=2')],
 
     ]
-}
-recommendation_keyboard = {
+})
+
+bookshelf_menu = json_keyboard({
     "inline": True,
     "buttons": [
         [get_text_buttons(label='Новинки', color='positive')],
@@ -195,50 +193,52 @@ recommendation_keyboard = {
         [get_text_buttons(label='Уйти', color='positive')]
 
     ]
-}
+})
 
 # ссылка на рекомендуемую книгу
-recommendation_link = {
+advice_book = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Забронировать',
                           'https://lermontovka-spb.ru/services/booking/')],
 
     ]
-}
+})
 
 # ссылка на новинки
-novelty_bookshelf_link = {
+novelty_bookshelf = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Заглянуть на полку',
-                          'https://www.livelib.ru/bookshelf/1645387-knizhnye-novinki-avgustsentyabr-2020/listview/smalltiles')],
+                          'https://www.livelib.ru/bookshelf/1656367-knizhnye-novinki-sentyabroktyabr-2020/listview/smalltiles')],
 
     ]
-}
+})
 
 # ссылка на подростковую
-teen_bookshelf_link = {
+adult_bookshelf = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Заглянуть на полку',
                           'https://www.livelib.ru/bookshelf/1640287-knigi-dlya-podrostkov/listview/smalltiles')],
 
     ]
-}
+})
 
 # Афиша
-poster_keyboard = {
+poster = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Афиша',
                           'https://vk.cc/auUdHT')],
+        [get_link_buttons('Записаться на мероприятие',
+                          'https://vk.cc/azEMqA')]
 
     ]
-}
+})
 
 # экскурсии
-excursion_keyboard_one = {
+excursion = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Часть 1', 'https://vk.cc/auXvnb'), get_link_buttons('Часть 2', 'https://vk.cc/auXvFq')],
@@ -248,21 +248,21 @@ excursion_keyboard_one = {
         [get_link_buttons('Часть 9', 'https://vk.cc/auXvVL'), get_link_buttons('Часть 10', 'https://vk.cc/auXvYA')]
 
     ]
-}
+})
 
-excursion_keyboard_two = {
+excursion_two = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Часть 11', 'https://vk.cc/avBjl2')]
 
     ]
-}
+})
 
-excursion_keyboard_three = {
+excursion_three = json_keyboard({
     "inline": True,
     "buttons": [
         [get_link_buttons('Часть 1', 'https://vk.cc/avKJNB'), get_link_buttons('Часть 2', 'https://vk.cc/aycMQb')],
         [get_link_buttons('Часть 3', 'https://vk.cc/aycNif'), get_link_buttons('Часть 4', 'https://vk.cc/aycNW8')],
         [get_link_buttons('Часть 5', 'https://vk.cc/aycO5o'), get_link_buttons('Часть 6', 'https://vk.cc/aycOg4')],
     ]
-}
+})

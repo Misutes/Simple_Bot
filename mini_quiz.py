@@ -1,8 +1,7 @@
 import time
 
 import Text as t
-import keyboard
-from keyboard import new_keyboard
+import keyboard as kb
 
 quit_ = ['уйти']
 
@@ -23,8 +22,8 @@ def quiz(event, message, sm, ssm, database, media):
     for word in message:
         if word in quit_:
             database.update_data('users', 'QUIZ', 0, event.user_id)
-            sm(user_name + t.quit, new_keyboard(keyboard.function_keyboard))
-            sm(t.connection, new_keyboard(keyboard.call_staff))
+            sm(user_name + t.quit_, kb.main_menu)
+            sm(t.staff_connect, kb.staff_call)
             return
 
     position = database.find_data('quiz', 'QUESTION', 'ID', event.user_id)[0]-1
@@ -55,6 +54,6 @@ def quiz(event, message, sm, ssm, database, media):
         sm(message=user_name + t.quiz_end_text)
         sm(message=t.quiz_count + count)
 
-        sm(t.quit_2, new_keyboard(keyboard.function_keyboard))
-        sm(t.connection, new_keyboard(keyboard.call_staff))
+        sm(t.quit_2, kb.main_menu)
+        sm(t.staff_connect, kb.staff_call)
 

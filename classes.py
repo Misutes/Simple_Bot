@@ -1,4 +1,5 @@
 import random
+import json
 
 import regex as re
 import requests as rq
@@ -95,3 +96,4 @@ class Media:
         media_id = save_photo['id']
         media = (media_type, owner_id, media_id)
         return media
+

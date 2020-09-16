@@ -1,23 +1,26 @@
+# -*- coding: utf-8 -*-
+
 import json
 import random
 import time
+import requests
 from datetime import datetime as dt
 
 import vk_api
 # from challenge import start_challenge, book_challenge
 from vk_api.longpoll import VkLongPoll, VkEventType
 
+import simple_answer as s_a
 import SQL
 import Speech
 import Text as t
 import admin_command as ac
 import dialogflow.google_ai as ai
-import keyboard
 import litres as lr
 import mini_quiz as dq
 import recommend as rc
 from classes import Reply, Request, Media
-from keyboard import new_keyboard
+import keyboard as kb
 
 token = '79eee7ae818b1db0d38b95f8911b1576e3d3a325c3622f6feaead4f3de1b09cdb0285cc9ac8308fb471f2'
 vk_session = vk_api.VkApi(token=token)
@@ -31,12 +34,137 @@ poster = media.upload('pictures/poster.png')
 excursion = media.upload('pictures/excursion.png')
 bye = media.upload('pictures/bye.png')
 novelty = media.upload('pictures/recommend.jpg')
+ya_picture = media.upload('pictures/ya_bookshelf.png')
 dovlatov_media = [(media.upload('pictures/dovlatov_secret_1.jpg'), media.upload('pictures/dovlatov_1.jpg')),
                   (media.upload('pictures/dovlatov_secret_2.jpg'), media.upload('pictures/dovlatov_2.jpg'))]
 
 
 def main():
     database = SQL.Database()
+
+    def greet():
+        greeting = random.choice(t.greeting_list)
+        if database.check_position('users', 'NEW', 1, reply.event.user_id):
+            database.update_data('users', 'NEW', 0, reply.event.user_id)
+            reply.ssm(*greeting_picture)
+            new_user = [
+                (user_name + greeting + t.first_meeting, kb.main_menu),
+                (t.speech, None),
+                (t.staff_connect, kb.staff_call)
+            ]
+            reply.msm(new_user)
+        else:
+            reply.ssm(*greeting_picture)
+            greeting_list = [
+                (user_name + greeting, kb.main_menu),
+                (t.staff_connect, kb.staff_call)]
+            reply.msm(greeting_list)
+
+    def gratitude():
+        reply.ssm(*bye)
+
+    def name_introduce():
+        reply.sm(message=t.name)
+
+    def creator_introduce():
+        reply.sm(message=t.creator)
+
+    def staff_call():
+        database.update_data('users', 'PAUSE', 1, event.user_id)
+        reply.sm(message=t.await_staff)
+
+    def book_renewal():
+        reply.sm(user_name + t.renewal_book, kb.renewal_book)
+
+    def schedule_introduce():
+        reply.sm(t.time_address, kb.geo_position)
+
+    def get_quote():
+        expression = random.choice(t.quotes_list)
+        reply.sm(message=expression)
+
+    def get_excursion():
+        reply.ssm(*excursion)
+        excursion_list = [
+            (t.excursion_one, kb.excursion),
+            (t.empty, kb.excursion_two),
+            (t.excursion_two, kb.excursion_three)
+        ]
+        reply.msm(excursion_list)
+
+    def get_litres():
+        database.update_data('users', 'LITRES', 1, event.user_id)
+        litres_list = [
+            (t.litres, kb.litres_menu),
+            (t.staff_connect, kb.staff_call)]
+        reply.msm(litres_list)
+
+    def get_lecture():
+        lecture = [
+            (user_name + t.announce_lecturer, None),
+            (t.first_lecturer, kb.first_lecturer),
+            (t.empty, kb.first_lecturer_two),
+            (t.second_lecturer, kb.second_lecturer),
+            (t.third_lecturer, kb.third_lecturer),
+            (t.fourth_lecturer, kb.fourth_lecturer),
+            (t.fifth_lecturer, kb.fifth_lecturer)
+        ]
+        reply.msm(lecture)
+
+    def get_poster():
+        reply.ssm(*poster)
+        reply.sm(t.events, kb.poster)
+
+    def get_book():
+        reply.sm(user_name + t.bookshelf, kb.bookshelf_menu)
+        database.update_data('users', 'RECOMMENDATION', 1, event.user_id)
+
+    def start_mini_quiz():
+        if database.check_position('quiz', 'ID', event.user_id, event.user_id):
+            reply.sm(message=user_name + t.quiz_sorry)
+            return
+        database.update_data('quiz', 'QUESTION', 1, event.user_id)
+        database.update_data('users', 'QUIZ', 1, event.user_id)
+        database.insert_data('quiz', 'ID', event.user_id)
+        database.update_data('quiz', 'TIME_', int(time.time()), event.user_id)
+        reply.sm(message=user_name + t.quiz_start_text)
+        reply.sm(message=t.q_a[0][0])
+
+    def none_answer():
+        answer = ai.response(event.text)
+        if answer == 'error':
+            if not database.find_data('bag_words', 'MAIN_MENU', 'MAIN_MENU', event.text):
+                database.insert_data('bag_words', 'MAIN_MENU', event.text)
+            reply.ssm(*random.choice(confusion_pictures))
+            non_answer = [
+                (user_name + t.suggestion, kb.main_menu),
+                (t.staff_connect, kb.staff_call)
+            ]
+            reply.msm(non_answer)
+        else:
+            reply.sm(message=answer)
+
+    def _pass_():
+        pass
+
+    key_function = {
+        "greet": greet,
+        "gratitude": gratitude,
+        "name_introduce": name_introduce,
+        "creator_introduce": creator_introduce,
+        "staff_call": staff_call,
+        "book_renewal": book_renewal,
+        "schedule_introduce": schedule_introduce,
+        "get_litres": get_litres,
+        "get_lecture": get_lecture,
+        "get_book": get_book,
+        "get_poster": get_poster,
+        "get_quote": get_quote,
+        "get_excursion": get_excursion,
+        "none": none_answer,
+        "pass": _pass_
+    }
+
     while True:
         for event in longpoll.listen():
             reply = Reply(session=vk_session, event=event)
@@ -49,7 +177,6 @@ def main():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 database.insert_data('users', 'ID', event.user_id)
                 database.update_name('users', 'NAME_', session_api.users.get(user_ids=event.user_id)[0]['first_name'], event.user_id)
-                miss_word = 0
                 user_message = Request(event.text).clear()
                 user_name = str(database.find_data('users', 'NAME_', 'ID', event.user_id)[0])
                 if event.attachments:
@@ -67,20 +194,16 @@ def main():
                 elif database.check_position('users', 'LITRES', 1, event.user_id):
                     lr.litres(event, user_message, reply.sm, reply.ssm, database, bye)
                     if database.check_position('users', 'PAUSE', 1, event.user_id):
-                        reply.sm(message=t.staff_answer)
+                        reply.sm(message=t.await_staff)
                     return
 
                 elif database.check_position('users', 'RECOMMENDATION', 1, event.user_id):
-                    rc.recommend(event, user_message, reply.sm, reply.ssm, database, novelty, bye)
+                    rc.recommend(event, user_message, reply.sm, reply.ssm, database, novelty, bye, ya_picture)
                     return
 
                 elif database.check_position('users', 'QUIZ', 1, event.user_id):
                     dq.quiz(event, user_message, reply.sm, reply.ssm, database, dovlatov_media)
                     return
-
-                # elif database.find_data('users', 'CHALLENGE', 1):
-                # book_challenge(user_message, reply.sm, empty, user_info, database)
-                # break
 
                 for word in user_message:
 
@@ -88,133 +211,35 @@ def main():
                         ac.terminal(vk_session, event, database, reply.ssm, greeting_picture)
                         return
 
-                    if word in t.list_of_greeting:
-                        greeting = random.choice(t.list_of_greeting_bot)
-                        if database.check_position('users', 'NEW', 1, event.user_id):
-                            database.update_data('users', 'NEW', 0, event.user_id)
-                            reply.ssm(*greeting_picture)
-                            new_user = [
-                                (user_name + greeting + t.first_greeting, new_keyboard(keyboard.function_keyboard)),
-                                (t.speech, None),
-                                (t.connection, new_keyboard(keyboard.call_staff))
-                            ]
-                            reply.msm(new_user)
-                        else:
-                            reply.ssm(*greeting_picture)
-                            greeting_list = [
-                                (user_name + greeting, new_keyboard(keyboard.function_keyboard)),
-                                (t.connection, new_keyboard(keyboard.call_staff))]
-                            reply.msm(greeting_list)
-
-                    elif word in t.renewal_list:
-                        reply.sm(user_name + t.renewal, new_keyboard(keyboard.link_keyboard))
-
-                    elif word in t.time_list:
-                        reply.sm(t.time, new_keyboard(keyboard.sing_keyboard))
-
-                    elif word in t.expression_call:
-                        expression = random.choice(t.expression)
-                        reply.sm(message=expression)
-
-                    elif word in t.excursion_call:
-                        reply.ssm(*excursion)
-                        excursion_list = [
-                            (t.excursion_one, new_keyboard(keyboard.excursion_keyboard_one)),
-                            (t.empty, new_keyboard(keyboard.excursion_keyboard_two)),
-                            (t.excursion_three, new_keyboard(keyboard.excursion_keyboard_three))
-                        ]
-                        reply.msm(excursion_list)
-
-                    elif word in t.litres_list:
-                        database.update_data('users', 'LITRES', 1, event.user_id)
-                        litres_list = [
-                            (t.litres, new_keyboard(keyboard.litres_keyboard)),
-                            (t.connection, new_keyboard(keyboard.call_staff))]
-                        reply.msm(litres_list)
-
-                    elif word in t.lectures:
-                        lecture = [
-                            (user_name + t.lecture_message, None),
-                            (t.first_lecturer, new_keyboard(keyboard.first_lecture_keyboard)),
-                            (t.empty, new_keyboard(keyboard.first_lecture_two_keyboard)),
-                            (t.second_lecturer, new_keyboard(keyboard.second_lecture_keyboard)),
-                            (t.third_lecturer, new_keyboard(keyboard.third_lecture_keyboard)),
-                            (t.fourth_lecturer, new_keyboard(keyboard.fourth_lecture_keyboard)),
-                            (t.fifth_lecturer, new_keyboard(keyboard.fifth_lecture_keyboard))
-                        ]
-                        reply.msm(lecture)
-
-                    elif word in t.poster_call:
-                        reply.ssm(*poster)
-                        reply.sm(t.poster, new_keyboard(keyboard.poster_keyboard))
-
-                    elif word in t.recommendation:
-                        reply.sm(user_name + t.recomm_text, new_keyboard(keyboard.recommendation_keyboard))
-                        database.update_data('users', 'RECOMMENDATION', 1, event.user_id)
-
-                    elif word in t.start_quiz:
-                        if database.check_position('quiz', 'ID', event.user_id, event.user_id):
-                            reply.sm(message=user_name + t.quiz_sorry)
-                            break
-                        database.update_data('quiz', 'QUESTION', 1, event.user_id)
-                        database.update_data('users', 'QUIZ', 1, event.user_id)
-                        database.insert_data('quiz', 'ID', event.user_id)
-                        database.update_data('quiz', 'TIME_', int(time.time()), event.user_id)
-                        reply.sm(message=user_name + t.quiz_start_text)
-                        reply.sm(message=t.q_a[0][0])
-
-                    # elif word in t.challenge_words:
-                        # database.update_data('users', 'CHALLENGE', 1, event.user_id)
-                        # start_challenge(vk_session, event, reply.sm, t.empty, user_info)
-
-                    elif word in t.name_call:
-                        reply.sm(message=t.name)
-
-                    elif word in t.creator_call:
-                        reply.sm(message=t.creator)
-
-                    elif word in t.connection_list:
-                        database.update_data('users', 'PAUSE', 1, event.user_id)
-                        reply.sm(message=t.staff_answer)
-
-                    elif word in t.parting:
-                        reply.ssm(*bye)
-
-                    else:
-                        miss_word += 1
-
-                if miss_word == len(user_message):
-                    answer = ai.response(event.text)
-                    if answer == 'error':
-                        if not database.find_data('bag_words', 'MAIN_MENU', 'MAIN_MENU', event.text):
-                            database.insert_data('bag_words', 'MAIN_MENU', event.text)
-                        reply.ssm(*random.choice(confusion_pictures))
-                        non_answer = [
-                            (user_name + t.suggestion, new_keyboard(keyboard.function_keyboard)),
-                            (t.connection, new_keyboard(keyboard.call_staff))
-                        ]
-                        reply.msm(non_answer)
-                    else:
-                        reply.sm(message=answer)
+                    s_a.search_answer(key_function, word, len(user_message))()
 
 
 if __name__ == '__main__':
     restart = 'Restart at: '
     update = 'Я обновился! И работаю дальше, Создатель!'
+    reconnect = 'Переподключение к серверам ВК'
+    H = int(dt.now().strftime("%H")) + 3
+    date_time = dt.now().strftime(f"%d/%m/%Y, {H}:%M:%S")
+
+    def update_(sleep_time, exception):
+        print(date_time + ': ' + exception)
+        time.sleep(sleep_time)
+        vk_session.method('messages.send', {
+            'user_id': t.administrator_id,
+            'message': update,
+            "random_id": 0,
+            "keyboard": None
+        })
+        response = Reply(vk_session, next(longpoll.listen()))
+        response.dm()
+        print(date_time + ': ' + update)
     while True:
         try:
-            print(restart + str(dt.now()))
             main()
+        except requests.exceptions.ReadTimeout:
+            update_(70, reconnect)
         except Exception as e:
-            print(str(dt.now()) + ': ' + str(e))
-            vk_session.method('messages.send', {
-                'user_id': t.administrator_id,
-                'message': update,
-                "random_id": 0,
-                "keyboard": None
-            })
-            response = Reply(vk_session, next(longpoll.listen()))
-            response.dm()
-            print(str(dt.now()) + ': ' + update)
-
+            update_(5, e)
+        else:
+            print(restart + date_time)
 

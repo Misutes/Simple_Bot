@@ -1,0 +1,40 @@
+{
+  "привет": "greet", "здравствуйте": "greet", "доброе": "greet", "доброй": "greet", "добрый": "greet",
+  "доброго": "greet", "йо-хо-хо": "greet", "хай": "greet", "хэллоу": "greet", "приветствую": "greet", "йоу": "greet",
+  "здравствуй": "greet", "можешь": "greet", "умеешь": "greet",
+
+  "свидани€": "gratitude", "спасибо": "gratitude", "благодарю": "gratitude", "молодец": "gratitude",
+  "умница": "gratitude", "красавчик": "gratitude", "красивый": "gratitude", "классный": "gratitude",
+  "умный": "gratitude", "интересно": "gratitude", "здорово": "gratitude", "при€тно": "gratitude",
+  "поздравл€ю":"gratitude", "отлично": "gratitude",
+
+  "зовут": "name_introduce", "им€": "name_introduce",
+
+  "создал": "creator_introduce", "создатели": "creator_introduce", "создатель": "creator_introduce",
+  "сделал": "creator_introduce",
+
+  "сотрудником": "staff_call", "кем-нибудь": "staff_call", "св€затьс€": "staff_call", "живым": "staff_call",
+  "человеком": "staff_call", "сотрудничество": "staff_call",
+
+  "продлить": "book_renewal", "продление": "book_renewal", "продлите": "book_renewal", "продлении": "book_renewal",
+
+  "работаете": "schedule_introduce", "режим": "schedule_introduce", "которого": "schedule_introduce",
+  "часы": "schedule_introduce", "адрес": "schedule_introduce", "находитесь": "schedule_introduce",
+
+  "литрес": "get_litres", "litres": "get_litres", "получить": "get_litres",
+
+  "видео": "get_lecture", "лекции": "get_lecture", "видеолекции": "get_lecture",
+
+  "посоветуй": "get_book", "прочитать": "get_book", "почитать": "get_book",
+  "посоветуйте": "get_book", "новинки": "get_book", "новые": "get_book",
+  "порекомендуй": "get_book", "порекомендуйте": "get_book",
+
+  "афиша": "get_poster", "меропри€ти€": "get_poster", "выставки": "get_poster", "мастер-класс": "get_poster",
+  "мастер-классы": "get_poster", "записатьс€": "get_poster", "запись": "get_poster", "зан€тие": "get_poster",
+
+  "цитата": "get_quote",
+
+  "экскурсии": "get_excursion",
+
+  "unresolved": 0
+}
