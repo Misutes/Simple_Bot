@@ -1,7 +1,7 @@
 {
   "привет": "greet", "здравствуйте": "greet", "доброе": "greet", "доброй": "greet", "добрый": "greet",
   "доброго": "greet", "йо-хо-хо": "greet", "хай": "greet", "хэллоу": "greet", "приветствую": "greet", "йоу": "greet",
-  "здравствуй": "greet", "можешь": "greet", "умеешь": "greet",
+  "здравствуй": "greet", "можешь": "greet", "умеешь": "greet", "начать": "greet",
 
   "свидания": "gratitude", "спасибо": "gratitude", "благодарю": "gratitude", "молодец": "gratitude",
   "умница": "gratitude", "красавчик": "gratitude", "красивый": "gratitude", "классный": "gratitude",

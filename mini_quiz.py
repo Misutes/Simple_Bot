@@ -1,33 +1,32 @@
 import time
 
-import Text as t
 import keyboard as kb
 
 quit_ = ['уйти']
 
 
-def quiz(event, message, sm, ssm, database, media):
+def quiz(event, class_,  message, sm, ssm, database, media):
     user_name = str(database.find_data('users', 'NAME_', 'ID', event.user_id)[0])
 
     def media_question(i, k):
-        sm(message=t.quiz_right + t.answer[position])
+        sm(message=class_.get_text('quiz_right') + class_.get_text('answer')[position])
         ssm(*media[i][k])
-        sm(message=t.q_a[position + 1][0])
+        sm(message=class_.get_text('q_a')[position + 1][0])
 
     def media_answer(i, k):
-        sm(message=t.quiz_right + t.answer[position])
+        sm(message=class_.get_text('quiz_right') + class_.get_text('answer')[position])
         ssm(*media[i][k])
-        sm(message=t.q_a[position + 1][0])
+        sm(message=class_.get_text('q_a')[position + 1][0])
 
     for word in message:
         if word in quit_:
             database.update_data('users', 'QUIZ', 0, event.user_id)
-            sm(user_name + t.quit_, kb.main_menu)
-            sm(t.staff_connect, kb.staff_call)
+            sm(user_name + class_.get_text('quit_'), kb.main_menu)
+            sm(class_.get_text('staff_connect'), kb.staff_call)
             return
 
     position = database.find_data('quiz', 'QUESTION', 'ID', event.user_id)[0]-1
-    if str(message[0]) == str(t.q_a[position][1]):
+    if str(message[0]) == str(class_.get_text('q_a')[position][1]):
         database.update_data('quiz', 'CORR_ANS', 'CORR_ANS + 1', event.user_id)
 
     if position + 1 < len(t.q_a):
@@ -41,8 +40,8 @@ def quiz(event, message, sm, ssm, database, media):
         elif position == 7:
             media_answer(1, 1)
         else:
-            sm(message=t.quiz_right + t.answer[position])
-            sm(message=t.q_a[position + 1][0])
+            sm(message=class_.get_text('quiz_right') + class_.get_text('answer')[position])
+            sm(message=class_.get_text('q_a')[position + 1][0])
 
     else:
         end = time.time()
@@ -51,9 +50,9 @@ def quiz(event, message, sm, ssm, database, media):
         database.update_data('users', 'QUIZ', 0, event.user_id)
 
         count = str(database.count_data('quiz', 'QUESTION', 10)[0])
-        sm(message=user_name + t.quiz_end_text)
-        sm(message=t.quiz_count + count)
+        sm(message=user_name + class_.get_text('quiz_end_text'))
+        sm(message=class_.get_text('quiz_count') + count)
 
-        sm(t.quit_2, kb.main_menu)
-        sm(t.staff_connect, kb.staff_call)
+        sm(class_.get_text('quit_2'), kb.main_menu)
+        sm(class_.get_text('staff_connect'), kb.staff_call)
 

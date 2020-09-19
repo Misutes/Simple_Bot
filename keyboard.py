@@ -77,7 +77,7 @@ staff_call = json_keyboard({
 geo_position = json_keyboard({
     "inline": True,
     "buttons": [
-        [get_link_buttons('Зяглянуть к нам', 'https://go.2gis.com/dglte')]
+        [get_link_buttons('Показать на карте', 'https://go.2gis.com/dglte')]
     ]
 })
 # первый лектор
