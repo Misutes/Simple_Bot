@@ -10,5 +10,5 @@ def terminal(session, event, class_, database, ssm, media):
         database.update_data('users', 'PAUSE', 1, event.user_id)
     elif 'бот' == event.text.lower():
         database.update_data('users', 'PAUSE', 0, event.user_id)
-        admin_reply.em(class_.get_text('edit_message'))
-        ssm(*media)
+        admin_reply.em(class_.get_data('edit_message'))
+        ssm(media)

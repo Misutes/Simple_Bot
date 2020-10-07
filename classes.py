@@ -5,7 +5,6 @@ import regex as re
 import requests as rq
 
 
-
 class Reply:
 
     def __init__(self, session, event):
@@ -22,10 +21,7 @@ class Reply:
         })
 
     # Special send message
-    def ssm(self, media_type, owner_id, media_id):
-        owner_id = str(owner_id)
-        media_id = str(media_id)
-        media = f'{media_type}{owner_id}_{media_id}'
+    def ssm(self, media):
         self.session.method('messages.send', {
             'user_id': self.event.user_id,
             'attachment': media,
@@ -84,17 +80,22 @@ class Media:
     def __init__(self, session):
         self.session = session
 
-    def upload(self, photo):
-        upload_url = self.session.method('photos.getMessagesUploadServer')['upload_url']
-        upload_photo = rq.post(upload_url, files={'photo': open(photo, 'rb')}).json()
-        save_photo = self.session.method('photos.saveMessagesPhoto',
-                                         {'server': upload_photo['server'], 'photo': upload_photo['photo'],
-                                          'hash': upload_photo['hash']})[0]
-        media_type = 'photo'
-        owner_id = save_photo['owner_id']
-        media_id = save_photo['id']
-        media = (media_type, owner_id, media_id)
-        return media
+    def upload(self, media, type_='photo'):
+        if type_ == 'photo':
+            upload_url = self.session.method('photos.getMessagesUploadServer')['upload_url']
+            upload_photo = rq.post(upload_url, files={'photo': open(media, 'rb')}).json()
+            save_photo = self.session.method('photos.saveMessagesPhoto',
+                                             {'server': upload_photo['server'], 'photo': upload_photo['photo'],
+                                              'hash': upload_photo['hash']})[0]
+            media_address = '{}{}_{}'.format(type_, save_photo['owner_id'], save_photo['id'])
+            return media_address
+
+        upload_url = self.session.method("docs.getMessagesUploadServer",
+                                         {"type": "audio_message", 'peer_id': '89546661'})
+        upload_audio = rq.post(upload_url['upload_url'], files={'file': open(media, 'rb')}).json()
+        save_audio = self.session.method("docs.save", {"file": upload_audio['file']})['audio_message']
+        media_address = '{}{}_{}'.format(type_, save_audio['owner_id'], save_audio['id'])
+        return media_address
 
 
 class JsonTable:
@@ -105,6 +106,10 @@ class JsonTable:
 
         with open('text.json', 'r', encoding="cp1251") as text_file:
             self.text = json.load(text_file)
+
+        with open('media_address.json', 'r', encoding="cp1251") as audio_file:
+            self.medias = json.load(audio_file)
+
         self.key_function = key_function
 
     def search_answer(self, user_message):
@@ -113,11 +118,15 @@ class JsonTable:
             try:
                 self.key_function[self.key_words[word]]()
                 miss_word = False
-
             except:
-                miss_word += 1
+                pass
         if miss_word:
-            self.key_function[self.key_words["none"]]()
+            self.key_function["none"]()
 
-    def get_text(self, key):
-        return self.text[key]
+    def get_data(self, key, data='text'):
+        return self.text[key] if data == 'text' else self.medias[key]
+
+
+def create_table(name, dict_):
+    with open(name, 'w', encoding="cp1251") as file:
+        json.dump(dict_, file, ensure_ascii=False)

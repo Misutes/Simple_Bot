@@ -39,6 +39,7 @@ class Database:
 
         # self.cursor.execute("""ALTER TABLE users ADD COLUMN QUIZ """)
 
+
     def insert_data(self, table, column, data):
         self.cursor.execute(f"SELECT {column} FROM {table} WHERE {column}='{data}'")
         if not self.cursor.fetchone():
@@ -76,3 +77,63 @@ class Database:
         else:
             return False
 
+
+class Inquiry:
+
+    def __init__(self):
+        self.inquiry = ''
+
+    def _select(self, columns, defaultTable = 'user'):
+        inquiry = 'SELECT'
+        for table, column in columns:
+            table = table if table else defaultTable
+            inquiry += ' ' + str(table) + ('.' if table else '') + str(column) + ','
+        self.inquiry = inquiry[-1] + self.inquiry
+
+    def _from(self, tables):
+        inquiry = 'FROM'
+        for table in tables:
+            inquiry += ' ' + str(table) + ','
+        self.inquiry = self.inquiry + inquiry
+
+    def _join(self):
+        pass
+
+    def _update(self, columns):
+        inquiry = 'UPDATE'
+        for table, column in columns:
+            inquiry += ' ' + str(table) + ','
+        self.inquiry = self.inquiry + inquiry
+
+    def _insert(self):
+        pass
+
+    def count(self):
+        pass
+
+    def where(self):
+        pass
+
+    def _eq(self):
+        pass
+
+    def _neq(self):
+        pass
+
+    def _ge(self):
+        pass
+
+    def _le(self):
+        pass
+
+    def _ge(self):
+        pass
+
+    def _le(self):
+        pass
+
+    def _and(self):
+        pass
+
+    def _or(self):
+        pass
