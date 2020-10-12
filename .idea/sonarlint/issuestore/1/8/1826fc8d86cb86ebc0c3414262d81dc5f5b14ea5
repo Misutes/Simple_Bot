@@ -1,0 +1,7 @@
+
+Mpython:S1066¯"/Merge this if statement with the enclosing one.(êÈÎ—øÿÿÿÿ
+tpython:S1186’"[Add a nested comment explaining why this function is empty, or complete the implementation.(íÁº
+5python:S125
+"Remove this commented out code.(¢ÃŸ
+Epython:S5603y"(Remove this unused function declaration.(Û•¿¨üÿÿÿÿ
+kpython:S3776("TRefactor this function to reduce its Cognitive Complexity from 52 to the 15 allowed.(œŸ²_

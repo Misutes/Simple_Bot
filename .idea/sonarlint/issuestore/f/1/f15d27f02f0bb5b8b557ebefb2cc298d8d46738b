@@ -1,0 +1,4 @@
+
+ppython:S116	"RRename this field "SQLRequest" to match the regular expression ^[_a-z][_a-z0-9]*$.(›‘å∞8Ãçπè—.
+kpython:S100f"MRename method "_isNot" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(µ‚öÔ8¸∫†è—.
+mpython:S100L"PRename method "createSQL" to match the regular expression ^[a-z_][a-z0-9_]{2,}$.(¿ìß8—ååí—.

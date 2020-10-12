@@ -1,52 +1,183 @@
 import sqlite3
 
 
+def createDB(cursor):
+    cursor.execute("""
+                CREATE TABLE IF NOT EXISTS users(
+                    user_id TEXT,
+                    name TEXT DEFAULT 1,
+                    new_user INT DEFAULT 1,
+                    pause_pos INT DEFAULT 0,
+                    challenge_pos INT  DEFAULT 0,
+                    litres_pos INT DEFAULT 0,
+                    recommendation_pos INT DEFAULT 0,
+                    quiz_pos INT DEFAULT 0
+                )
+            """)
+
+    cursor.execute("""
+                CREATE TABLE IF NOT EXISTS bad_words(
+                    main_menu TEXT,
+                    recommendation TEXT,
+                    litres TEXT
+                )
+            """)
+
+    cursor.execute("""
+                        CREATE TABLE IF NOT EXISTS quiz(
+                            user_id TEXT,
+                            question INT DEFAULT 1,
+                            correct_answer INT DEFAULT 0,
+                            time INT DEFAULT 0
+                        )
+                    """)
+
+    cursor.execute("""
+                            CREATE TABLE IF NOT EXISTS message_text(
+                                trigger TEXT,
+                                value TEXT
+                            )
+                        """)
+
+    cursor.execute("""
+                            CREATE TABLE IF NOT EXISTS media(
+                                media TEXT,
+                                value TEXT
+                            )
+                        """)
+
+
+def renameColumn(cursor, table, columns):
+    for column in columns:
+        stmt = "ALTER TABLE {table} RENAME COLUMN {oldname} TO {newname}".format(
+            table=table,
+            oldname=column[0],
+            newname=column[1]
+        )
+        cursor.execute(stmt)
+
+
+if __name__ == '__main__':
+    connect = sqlite3.connect('Users_DB')
+    cursor = connect.cursor()
+    # func
+    connect.commit()
+
+
 class Database:
 
     def __init__(self):
         self.connect = sqlite3.connect('Users_DB')
         self.cursor = self.connect.cursor()
-
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users(
-                ID TEXT,
-                NAME_ TEXT DEFAULT 1,
-                NEW INT DEFAULT 1,
-                PAUSE INT DEFAULT 0,
-                CHALLENGE INT  DEFAULT 0,
-                LITRES INT DEFAULT 0,
-                RECOMMENDATION INT DEFAULT 0,
-                QUIZ INT DEFAULT 0
-            )
-        """)
-
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS bag_words(
-                MAIN_MENU TEXT,
-                RECOMMENDATION TEXT,
-                LITRES TEXT
-            )
-        """)
-
-        self.cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS quiz(
-                        ID TEXT,
-                        QUESTION INT DEFAULT 1,
-                        CORR_ANS INT DEFAULT 0,
-                        TIME_ INT DEFAULT 0
-                    )
-                """)
-
-        # self.cursor.execute("""ALTER TABLE users ADD COLUMN QUIZ """)
+        self.SQLRequest = SQLReuest(self.connect, self.cursor)
 
 
-    def insert_data(self, table, column, data):
-        self.cursor.execute(f"SELECT {column} FROM {table} WHERE {column}='{data}'")
+class Record:
+
+    def _select(self, tables: list):
+        localSelect = 'SELECT '
+        localFrom = ' FROM '
+        for table in tables:
+            localSelect += '{table}, '.format(table=table)
+            point = table.find('.')
+            localFrom += table[:point] + ', '
+        localSelect, localFrom = localSelect[:-2], localFrom[:-2]
+        return localSelect + localFrom
+
+    def _where(self, conds):
+        localWhere = 'WHERE '
+        stmt = ' AND '.join(conds)
+        return localWhere + stmt
+
+    def _update(self, table, value):
+        localUpdate = 'UPDATE '
+        localSet = ' SET '
+        point = table.find('.')
+        return localUpdate + table[:point] + localSet + '{column}={value}'.format(column=table[point + 1:], value=value)
+
+    def _insert(self, table, value):
+        table, value = str(table[0]), str(value[0])
+        localInsert = 'INSERT INTO '
+        localValue = ' VALUES '
+        return localInsert + table.replace('.', '(') + ')' + localValue + '({value})'.format(value=value)
+
+    def _count(self, table):
+        point = table.find('.')
+        return 'SELECT COUNT({column}) FROM {table}'.format(
+            table=table[:point],
+            column=table[point+1:]
+        )
+
+    def createSQL(self, method, where: str = ''):
+        return '{method} {where}'.format(method=method, where=where)
+
+
+class Inquiry:
+
+    def _eq(self, tables, values):
+        conds = ['{column}={value}'.format(column=column, value=value)
+                 for column, value in zip(tables, values)]
+        return conds
+
+    def _neq(self, tables, values):
+        conds = ['{column}!={value}'.format(column=column, value=value)
+                 for column, value in zip(tables, values)]
+        return conds
+
+    def _ge(self, tables, values):
+        conds = ['{column}>={value}'.format(column=column, value=value)
+                 for column, value in zip(tables, values)]
+        return conds
+
+    def _le(self, tables, values):
+        conds = ['{column}<={value}'.format(column=column, value=value)
+                 for column, value in zip(tables, values)]
+        return conds
+
+    def _ge(self, tables, values):
+        conds = ['{column}>{value}'.format(column=column, value=value)
+                 for column, value in zip(tables, values)]
+        return conds
+
+    def _le(self, tables, values):
+        conds = ['{column}<{value}'.format(column=column, value=value)
+                 for column, value in zip(tables, values)]
+        return conds
+
+    def _isNot(self, tables, values):
+        conds = ['{column} IS NOT {value}'.format(column=column, value=value)
+                 for column, value in zip(tables, values)]
+        return conds
+
+    def _is(self, tables, values):
+        conds = ['{column} IS {value}'.format(column=column, value=value)
+                 for column, value in zip(tables, values)]
+        return conds
+
+
+class SQLReuest(Inquiry, Record):
+
+    def __init__(self, connect, cursor):
+        self.connect = connect
+        self.cursor = cursor
+
+    def insert_data(self, tables: list, value: list):
+        SQLSelect = self.createSQL(
+            self._select(tables),
+            self._where(self._eq(tables, value))
+        )
+        SQLInsert = self.createSQL(
+            self._insert(tables, value)
+        )
+        self.cursor.execute(SQLSelect)
         if not self.cursor.fetchone():
-            self.cursor.execute(f"INSERT INTO {table}({column}) VALUES (?)", (data,))
+            self.cursor.execute(SQLInsert)
         self.connect.commit()
 
     def update_data(self, table, column, data, user_id):
+        SQLUpdate = self.createSQL(
+            self._update()
+        )
         self.cursor.execute(f"UPDATE {table} SET {column} = {data} WHERE ID={user_id}")
         self.connect.commit()
 
@@ -76,64 +207,3 @@ class Database:
             return self.cursor.fetchone()
         else:
             return False
-
-
-class Inquiry:
-
-    def __init__(self):
-        self.inquiry = ''
-
-    def _select(self, columns, defaultTable = 'user'):
-        inquiry = 'SELECT'
-        for table, column in columns:
-            table = table if table else defaultTable
-            inquiry += ' ' + str(table) + ('.' if table else '') + str(column) + ','
-        self.inquiry = inquiry[-1] + self.inquiry
-
-    def _from(self, tables):
-        inquiry = 'FROM'
-        for table in tables:
-            inquiry += ' ' + str(table) + ','
-        self.inquiry = self.inquiry + inquiry
-
-    def _join(self):
-        pass
-
-    def _update(self, columns):
-        inquiry = 'UPDATE'
-        for table, column in columns:
-            inquiry += ' ' + str(table) + ','
-        self.inquiry = self.inquiry + inquiry
-
-    def _insert(self):
-        pass
-
-    def count(self):
-        pass
-
-    def where(self):
-        pass
-
-    def _eq(self):
-        pass
-
-    def _neq(self):
-        pass
-
-    def _ge(self):
-        pass
-
-    def _le(self):
-        pass
-
-    def _ge(self):
-        pass
-
-    def _le(self):
-        pass
-
-    def _and(self):
-        pass
-
-    def _or(self):
-        pass
